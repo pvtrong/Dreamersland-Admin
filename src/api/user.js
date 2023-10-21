@@ -21,3 +21,10 @@ export function logout() {
     method: 'post'
   })
 }
+
+export function getUsers() {
+  return request({
+    url: '/user',
+    method: 'get',
+  })
+}
