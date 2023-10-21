@@ -9,6 +9,13 @@
           <i slot="prefix" class="el-input__icon el-icon-search"></i>
         </el-input>
       </div>
+      <div class="course__panel--edit">
+        <el-button
+          @click="fetchData"
+          type="primary"
+          icon="el-icon-search"
+        ></el-button>
+      </div>
       <div class="user__panel--search">
         
       </div>
@@ -141,9 +148,10 @@ export default {
       tableColumns,
       tableData: [],
       multipleSelection: [],
+      keyword: "",
       total: 0,
       filter: {
-        // keyword: "",
+        keyword: "",
         limit: 10,
         currentPage: 1,
       },
@@ -168,6 +176,7 @@ export default {
       this.multipleSelection = val
     },
     async fetchData() {
+      this.filter.keyword = this.keyword
       try {
         this.loading = true
         const { data } = await getUsers({
@@ -249,8 +258,8 @@ export default {
       text-transform: uppercase;
       color: rgba(0, 0, 0, 0.5);
     }
-    &--filter {
-      margin-right: auto;
+    &--create {
+      margin-left: auto;
     }
   }
 }
