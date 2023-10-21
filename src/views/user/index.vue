@@ -14,6 +14,7 @@
           @click="fetchData"
           type="primary"
           icon="el-icon-search"
+          :loading="loading"
         ></el-button>
       </div>
       <div class="user__panel--search">
@@ -27,7 +28,7 @@
       </div> -->
       <div class="user__panel--create">
         <el-button
-          @click="$router.push({ path: 'user/put' })"
+          @click="openCreateDialog"
           type="primary"
           icon="el-icon-plus"
           >Thêm nhân viên</el-button
@@ -86,15 +87,48 @@
       :current-page.sync="filter.currentPage"
     >
     </el-pagination>
+
+    <!-- create dialog add user -->
+    <el-dialog
+      title="Thêm nhân viên"
+      :visible.sync="dialogFormVisible"
+      width="30%"
+      :before-close="handleClose"
+    >
+      <el-form :model="form" :rules="rules" ref="form" label-width="120px">
+        <el-form-item label="Tên nhân viên" prop="first_name">
+          <el-input v-model="form.first_name"></el-input>
+        </el-form-item>
+        <el-form-item label="Họ nhân viên" prop="last_name">
+          <el-input v-model="form.last_name"></el-input>
+        </el-form-item>
+        <el-form-item label="Email" prop="email">
+          <el-input v-model="form.email"></el-input>
+        </el-form-item>
+        <el-form-item label="Số điện thoại" prop="phone">
+          <el-input v-model="form.phone"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">Hủy</el-button>
+        <el-button type="primary" @click="submit"
+          >Lưu</el-button
+        >
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
-import { getUsers } from '@/api/user'
+import { getUsers, createUser } from '@/api/user'
 import { mapGetters } from 'vuex'
-import { formatDate } from '@/utils/index'
 
-// constant
+// utils
+import { formatDate } from '@/utils/index'
+import { rules } from '@/utils/validate' 
+
+// constants
 import { TYPE_DATA } from "@/commons/index.constant"
 
 const tableColumns = [
@@ -120,7 +154,7 @@ const tableColumns = [
   },
   {
     label: 'Số điện thoại',
-    property: 'END DATE',
+    property: 'phone',
   },
   {
     label: 'Ngày tạo',
@@ -143,6 +177,13 @@ export default {
     this.filter.limit = Number(this.filter.limit)
   },
   data() {
+    var defaultForm = {
+      id: "",
+      firs_name: "",
+      last_name: "",
+      email: "",
+      phone: "",
+    }
     return {
       formatDate,
       tableColumns,
@@ -158,11 +199,54 @@ export default {
       loading: false,
       isEditLesson: false,
       isFirstGetData: true,
-      TYPE_DATA
+      TYPE_DATA,
+      // create dialog
+      dialogFormVisible: false,
+      form: defaultForm,
+      rules
     }
   },
 
   methods: {
+    submit() {
+      this.$refs['form'].validate(async (valid) => {
+        if (valid) {
+          try {
+            this.form.id ? await updateUser(this.form) : await createUser(this.form)
+            this.$message({
+              message: this.form.id ? 'Cập nhật thành công' : 'Tạo thành công' ,
+              type: 'success',
+            })
+            this.dialogFormVisible = false
+            this.fetchData()
+          } catch (error) {
+            this.form.id ? this.$message.error('Cập nhật thất bại') : this.$message.error('Tạo thất bại')
+          }
+        } else {
+          return false
+        }
+      })
+    },
+    openCreateDialog(record) {
+      if(record) {
+        this.form = {
+          id: record.id,
+          firs_name: record.first_name,
+          last_name: record.last_name,
+          email: record.email,
+          phone: record.phone,
+        }
+      }
+      else this.form = defaultForm
+      this.dialogFormVisible = true
+    },
+    handleClose(done) {
+      this.$confirm('Bạn có chắc chắn muốn thoát?')
+        .then(_ => {
+          done();
+        })
+        .catch(_ => {});
+    },
     toggleSelection(rows) {
       if (rows) {
         rows.forEach((row) => {
