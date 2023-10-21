@@ -66,17 +66,19 @@ export const constantRoutes = [
         component: () => import('@/views/user/index.vue'),
         meta: { title: 'Quản lý nhân viên', icon: 'el-icon-user-solid', activeMenu: '/user' },
       },
-      // {
-      //   path: '/user/:id',
-      //   name: 'User Detail',
-      //   component: () => import('@/views/user/_id/index.vue'),
-      //   meta: {
-      //     title: 'Customer Detail',
-      //     icon: 'ic_user',
-      //     activeMenu: '/user',
-      //   },
-      //   hidden: true,
-      // },
+    ],
+  },
+  {
+    path: '/ranking',
+    component: Layout,
+    meta: { title: 'Quản lý danh hiệu', icon: 'el-icon-star-on', activeMenu: '/ranking' },
+    children: [
+      {
+        path: '/ranking',
+        name: 'Rankings',
+        component: () => import('@/views/ranking/index.vue'),
+        meta: { title: 'Quản lý danh hiệu', icon: 'el-icon-star-on', activeMenu: '/ranking' },
+      },
     ],
   },
 

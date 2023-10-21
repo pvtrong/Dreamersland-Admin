@@ -1,0 +1,37 @@
+import request from '@/utils/request'
+
+export function login(data) {
+  return request({
+    url: '/user/login',
+    method: 'post',
+    data
+  })
+}
+
+export function getInfo(token) {
+  return request({
+    url: '/user',
+    method: 'get',
+  })
+}
+
+export function logout() {
+  return request({
+    url: '/user/logout',
+    method: 'post'
+  })
+}
+
+export function createRanking() {
+  return request({
+    url: '/user',
+    method: 'post'
+  })
+}
+
+export function getRankings() {
+  return request({
+    url: '/user',
+    method: 'get',
+  })
+}
