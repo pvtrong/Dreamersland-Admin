@@ -15,7 +15,7 @@ export function isExternal(path) {
  * @returns {Boolean}
  */
 export function validUsername(str) {
-  return /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(str)
+  return /(84|0[3|5|7|8|9])+([0-9]{8})\b/g.test(str)
 }
 
 export const rules = {
