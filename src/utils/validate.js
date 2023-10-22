@@ -17,3 +17,36 @@ export function isExternal(path) {
 export function validUsername(str) {
   return /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(str)
 }
+
+export const rules = {
+  email: {
+    type: 'string',
+    required: true,
+    trigger: ['blur', 'change'],
+    message: 'Vui lòng nhập email',
+  },
+  first_name: {
+    type: 'string',
+    required: true,
+    trigger: ['blur', 'change'],
+    message: 'Vui lòng nhập tên',
+  },
+  last_name: {
+    type: 'string',
+    required: true,
+    trigger: ['blur', 'change'],
+    message: 'Vui lòng nhập họ',
+  },
+  password: {
+    type: 'string',
+    required: true,
+    trigger: ['blur', 'change'],
+    message: 'Vui lòng nhập mật khẩu',
+  },
+  phone: {
+    type: 'string',
+    required: true,
+    trigger: ['blur', 'change'],
+    message: 'Vui lòng nhập số điện thoại',
+  },
+}

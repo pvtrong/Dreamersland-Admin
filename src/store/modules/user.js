@@ -66,9 +66,9 @@ const actions = {
 
   // user logout
   logout({ commit, state }) {
-    removeToken() // must remove  token  first
-    resetRouter()
-    commit('RESET_STATE')
+        removeToken() // must remove  token  first
+        resetRouter()
+        commit('RESET_STATE')
   },
 
   // remove token
