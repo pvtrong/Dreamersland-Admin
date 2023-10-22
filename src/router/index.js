@@ -81,6 +81,19 @@ export const constantRoutes = [
       },
     ],
   },
+  {
+    path: '/sale',
+    component: Layout,
+    meta: { title: 'Quản lý doanh số', icon: 'el-icon-s-data', activeMenu: '/sale' },
+    children: [
+      {
+        path: '/sale',
+        name: 'Sales',
+        component: () => import('@/views/sale/index.vue'),
+        meta: { title: 'Quản lý doanh số', icon: 'el-icon-s-data', activeMenu: '/sale' },
+      },
+    ],
+  },
 
   
 
