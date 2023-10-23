@@ -76,6 +76,14 @@
               circle=""
             ></el-button>
           </el-tooltip>
+          <el-tooltip effect="dark" content="Xoá" placement="top">
+            <el-button
+              icon="el-icon-delete"
+              @click="handleClickDelete(scope)"
+              circle=""
+              type="danger"
+            ></el-button>
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
@@ -134,7 +142,7 @@
 </template>
 
 <script>
-import { getRankings, createRanking } from '@/api/ranking'
+import { getRankings, createRanking, updateRanking, deleteRanking } from '@/api/ranking'
 import { mapGetters } from 'vuex'
 
 // utils
@@ -196,7 +204,7 @@ export default {
       img_url: "",
       min_point: "",
       max_point: "",
-      file: null,
+      image: null,
     }
     return {
       formatDate,
@@ -221,9 +229,24 @@ export default {
   },
 
   methods: {
+    async handleClickDelete(record) {
+      this.$confirm('Bạn có chắc chắn muốn xoá danh hiệu này?')
+        .then(async _ => {
+          try {
+            await deleteRanking(record.row.id)
+            this.$message({
+              message: 'Xoá thành công',
+              type: 'success',
+            })
+            this.fetchData()
+          } catch (error) {
+          }
+        })
+        .catch(_ => {});
+    },
     handleChange(file) {
       this.form.img_url = file.url
-      this.form.file = file.raw
+      this.form.image = file.raw
     },
     submit() {
       this.$refs['form'].validate(async (valid) => {
@@ -240,6 +263,11 @@ export default {
               }
             }
 
+            if(!this.form.id) 
+            {
+              formData.delete('id')
+            }
+            formData.delete('img_url')
             
             this.form.id ? await updateRanking(formData) : await createRanking(formData)
             this.$message({
@@ -264,7 +292,7 @@ export default {
           img_url: record.img_url,
           min_point: record.min_point,
           max_point: record.max_point,
-          file: null,
+          image: null,
         }
       }
       else this.form = defaultForm
@@ -294,8 +322,9 @@ export default {
       try {
         this.loading = true
         const { data } = await getRankings({
-          ...this.filter,
-          page: this.filter.currentPage,
+            ...this.filter,
+            page: this.filter.currentPage,
+            rank_name: this.filter.keyword
         })
         this.tableData =
           data?.data
@@ -326,7 +355,6 @@ export default {
       handler: function () {
         this.fetchData()
       },
-      deep: true,
     },
   },
 }
