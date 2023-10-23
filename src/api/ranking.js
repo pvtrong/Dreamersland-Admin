@@ -1,37 +1,32 @@
 import request from '@/utils/request'
 
-export function login(data) {
+export function createRanking(data) {
   return request({
-    url: '/user/login',
+    url: '/rank',
     method: 'post',
     data
   })
 }
 
-export function getInfo(token) {
+export function updateRanking(data) {
   return request({
-    url: '/user',
+    url: '/rank',
+    method: 'put',
+    data
+  })
+}
+
+export function getRankings(params) {
+  return request({
+    url: '/rank/search',
     method: 'get',
+    params
   })
 }
 
-export function logout() {
+export function deleteRanking(id) {
   return request({
-    url: '/user/logout',
-    method: 'post'
-  })
-}
-
-export function createRanking() {
-  return request({
-    url: '/user',
-    method: 'post'
-  })
-}
-
-export function getRankings() {
-  return request({
-    url: '/user',
-    method: 'get',
+    url: '/rank/' + id,
+    method: 'delete',
   })
 }
