@@ -49,4 +49,40 @@ export const rules = {
     trigger: ['blur', 'change'],
     message: 'Vui lòng nhập số điện thoại',
   },
+  rank_name: {
+    type: 'string',
+    required: true,
+    trigger: ['blur', 'change'],
+    message: 'Vui lòng nhập tên danh hiệu',
+  },
+  min_point: {
+    type: 'number',
+    required: true,
+    trigger: ['blur', 'change'],
+    message: 'Vui lòng nhập điểm tối thiểu',
+  },
+  max_point: {
+    type: 'number',
+    required: true,
+    trigger: ['blur', 'change'],
+    message: 'Vui lòng nhập điểm tối đa',
+  },
+  season_name: {
+    type: 'string',
+    required: true,
+    trigger: ['blur', 'change'],
+    message: 'Vui lòng nhập tên mùa',
+  },
+  start_date: {
+    type: 'date',
+    required: true,
+    trigger: ['blur', 'change'],
+    message: 'Vui lòng nhập ngày bắt đầu',
+  },
+  end_date: {
+    type: 'date',
+    required: true,
+    trigger: ['blur', 'change'],
+    message: 'Vui lòng nhập ngày kết thúc',
+  },
 }

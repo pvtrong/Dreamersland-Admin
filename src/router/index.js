@@ -66,17 +66,45 @@ export const constantRoutes = [
         component: () => import('@/views/user/index.vue'),
         meta: { title: 'Quản lý nhân viên', icon: 'el-icon-user-solid', activeMenu: '/user' },
       },
-      // {
-      //   path: '/user/:id',
-      //   name: 'User Detail',
-      //   component: () => import('@/views/user/_id/index.vue'),
-      //   meta: {
-      //     title: 'Customer Detail',
-      //     icon: 'ic_user',
-      //     activeMenu: '/user',
-      //   },
-      //   hidden: true,
-      // },
+    ],
+  },
+  {
+    path: '/ranking',
+    component: Layout,
+    meta: { title: 'Quản lý danh hiệu', icon: 'el-icon-star-on', activeMenu: '/ranking' },
+    children: [
+      {
+        path: '/ranking',
+        name: 'Rankings',
+        component: () => import('@/views/ranking/index.vue'),
+        meta: { title: 'Quản lý danh hiệu', icon: 'el-icon-star-on', activeMenu: '/ranking' },
+      },
+    ],
+  },
+  {
+    path: '/sale',
+    component: Layout,
+    meta: { title: 'Quản lý doanh số', icon: 'el-icon-s-data', activeMenu: '/sale' },
+    children: [
+      {
+        path: '/sale',
+        name: 'Sales',
+        component: () => import('@/views/sale/index.vue'),
+        meta: { title: 'Quản lý doanh số', icon: 'el-icon-s-data', activeMenu: '/sale' },
+      },
+    ],
+  },
+  {
+    path: '/season',
+    component: Layout,
+    meta: { title: 'Quản lý mùa', icon: 'el-icon-data-line', activeMenu: '/season' },
+    children: [
+      {
+        path: '/season',
+        name: 'Seasons',
+        component: () => import('@/views/season/index.vue'),
+        meta: { title: 'Quản lý mùa', icon: 'el-icon-data-line', activeMenu: '/season' },
+      },
     ],
   },
 
