@@ -7,9 +7,10 @@ export function createSeason() {
   })
 }
 
-export function getSeasons() {
+export function getSeasons(params) {
   return request({
     url: '/season',
     method: 'get',
+    params
   })
 }

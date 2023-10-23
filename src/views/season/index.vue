@@ -1,11 +1,11 @@
 <template>
-  <div class="season-container container">
+  <div class="season-container container" @keydown.enter="fetchData">
     <div class="season__header container__header">Quản lý mùa</div>
     <div class="season__panel">
       <div class="season__panel--name">Mùa</div>
       <div class="season__panel--total">{{ total }}</div>
       <div class="season__panel--filter">
-        <el-input placeholder="Tìm kiếm" v-model="keyword">
+        <el-input placeholder="Tìm kiếm" v-model="keyword" clearable="true" @clear="fetchData">
           <i slot="prefix" class="el-input__icon el-icon-search"></i>
         </el-input>
       </div>
@@ -47,7 +47,29 @@
     >
       <template v-for="(item, index) in tableColumns">
         <el-table-column
-          v-if="item.type === TYPE_DATA.DATE"
+          v-if="item.property === 'end_date'"
+          :label="item.label"
+          :type="item.type"
+          :key="index"
+          :width="item.width"
+        >
+          <template #default="scope"
+            >{{ formatDate(scope.row.end_date) }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-else-if="item.property === 'start_date'"
+          :label="item.label"
+          :type="item.type"
+          :key="index"
+          :width="item.width"
+        >
+          <template #default="scope"
+            >{{ formatDate(scope.row.start_date) }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-else-if="item.property === 'createdAt'"
           :label="item.label"
           :type="item.type"
           :key="index"
@@ -74,6 +96,14 @@
               icon="el-icon-edit"
               @click="handleClickEdit(scope)"
               circle=""
+            ></el-button>
+          </el-tooltip>
+          <el-tooltip effect="dark" content="Xoá" placement="top">
+            <el-button
+              icon="el-icon-delete"
+              @click="handleClickDelete(scope)"
+              circle=""
+              type="danger"
             ></el-button>
           </el-tooltip>
         </template>
@@ -278,14 +308,15 @@ export default {
       try {
         this.loading = true
         const { data } = await getSeasons({
-          pagination: {
             limit: this.filter.limit,
-            offset: (this.filter.currentPage - 1) * this.filter.limit,
-          },
+            page: this.filter.currentPage,
+            season_name: this.filter.keyword
         })
         this.tableData =
-          data?.data
+        data?.data
+          
         this.total = data.total
+        document
           .getElementsByClassName('el-table__body-wrapper')[0]
           .scrollTo(0, 0)
         if (!this.isFirstGetData)
