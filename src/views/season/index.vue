@@ -90,23 +90,43 @@
 
     <!-- create dialog add season -->
     <el-dialog
-      title="Thêm nhân viên"
+      title="Thêm mùa"
       :visible.sync="dialogFormVisible"
       width="30%"
       :before-close="handleClose"
     >
       <el-form :model="form" :rules="rules" ref="form" label-width="120px">
-        <el-form-item label="Tên nhân viên" prop="first_name">
-          <el-input v-model="form.first_name"></el-input>
+        <el-form-item label="Tên mùa" prop="season_name">
+          <el-input v-model="form.season_name" placeholder="Nhập tên mùa"></el-input>
         </el-form-item>
-        <el-form-item label="Họ nhân viên" prop="last_name">
-          <el-input v-model="form.last_name"></el-input>
+        <el-form-item label="Ngày bắt đầu" prop="start_date">
+          <el-date-picker
+            v-model="form.start_date"
+            type="date"
+            placeholder="Chọn ngày bắt đầu"
+            value-format="yyyy-MM-dd"
+            :picker-options="{
+              disabledDate(time) {
+                return time.getTime() < Date.now() - 8.64e7;
+              },
+            }"
+            :disabled="new Date(form.start_date) < new Date() && form.id"
+          ></el-date-picker>
+          <!-- > Date.Now() -->
         </el-form-item>
-        <el-form-item label="Email" prop="email">
-          <el-input v-model="form.email"></el-input>
-        </el-form-item>
-        <el-form-item label="Số điện thoại" prop="phone">
-          <el-input v-model="form.phone"></el-input>
+        <el-form-item label="Ngày kết thúc" prop="end_date">
+          <el-date-picker
+            v-model="form.end_date"
+            type="date"
+            placeholder="Chọn ngày kết thúc"
+            value-format="yyyy-MM-dd"
+            :picker-options="{
+              disabledDate(time) {
+                return time.getTime() < Date.now() - 8.64e7 || time.getTime() <= new Date(form.start_date);
+              },
+            }"
+            :disabled="(new Date(form.end_date) < new Date(form.start_date) || new Date(form.end_date) < Date.now()) && form.id"
+          ></el-date-picker>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -160,7 +180,7 @@ const tableColumns = [
   ]
 
 export default {
-  name: 'Users',
+  name: 'Seasons',
   computed: {
     ...mapGetters(['name']),
   },
@@ -175,10 +195,9 @@ export default {
   data() {
     var defaultForm = {
       id: "",
-      firs_name: "",
-      last_name: "",
-      email: "",
-      phone: "",
+      season_name: "",
+      start_date: null,
+      end_date: null,
     }
     return {
       formatDate,
@@ -208,7 +227,7 @@ export default {
       this.$refs['form'].validate(async (valid) => {
         if (valid) {
           try {
-            this.form.id ? await updateUser(this.form) : await createSeason(this.form)
+            this.form.id ? await updateSeason(this.form) : await createSeason(this.form)
             this.$message({
               message: this.form.id ? 'Cập nhật thành công' : 'Tạo thành công' ,
               type: 'success',
@@ -227,10 +246,9 @@ export default {
       if(record) {
         this.form = {
           id: record.id,
-          firs_name: record.first_name,
-          last_name: record.last_name,
-          email: record.email,
-          phone: record.phone,
+          season_name: record.season_name,
+          start_date: record.start_date,
+          end_date: record.end_date,
         }
       }
       else this.form = defaultForm
@@ -266,13 +284,8 @@ export default {
           },
         })
         this.tableData =
-          data &&
-          data.airdropCampaigns &&
-          data.airdropCampaigns.airdropCampaigns
-            ? data.airdropCampaigns.airdropCampaigns
-            : []
-        this.total = data.airdropCampaigns.pagination.totalRecords
-        document
+          data?.data
+        this.total = data.total
           .getElementsByClassName('el-table__body-wrapper')[0]
           .scrollTo(0, 0)
         if (!this.isFirstGetData)
@@ -290,7 +303,7 @@ export default {
     },
     handleClickEdit(scope) {
       this.$router.push({
-        path: `user/put/${scope.row.id}`,
+        path: `season/put/${scope.row.id}`,
       })
     },
   },
@@ -307,7 +320,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.user {
+.season {
   &__panel {
     display: flex;
     padding-bottom: 12px;
