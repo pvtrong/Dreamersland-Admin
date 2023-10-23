@@ -54,7 +54,29 @@
           :width="item.width"
         >
           <template #default="scope"
-            >{{ formatDate(scope.row.time) }}
+            >{{ formatDate(scope.row.date_time) }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-else-if="item.label === 'Họ tên nhân viên'"
+          :label="item.label"
+          :type="item.type"
+          :key="index"
+          :width="item.width"
+        >
+          <template #default="scope"
+            >{{ scope.row.user.first_name + ' ' + scope.row.user.last_name }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-else-if="item.label === 'Doanh số'"
+          :label="item.label"
+          :type="item.type"
+          :key="index"
+          :width="item.width"
+        >
+          <template #default="scope"
+            >{{ scope.row.amount.toLocaleString('it-IT', {style : 'currency', currency : 'VND'}) }}
           </template>
         </el-table-column>
         <el-table-column
@@ -74,6 +96,14 @@
               icon="el-icon-edit"
               @click="handleClickEdit(scope)"
               circle=""
+            ></el-button>
+          </el-tooltip>
+          <el-tooltip effect="dark" content="Xoá" placement="top">
+            <el-button
+              icon="el-icon-delete"
+              @click="handleClickDelete(scope)"
+              circle=""
+              type="danger"
             ></el-button>
           </el-tooltip>
         </template>
@@ -146,24 +176,23 @@ const tableColumns = [
   },
   {
     label: 'Số điểm nhận được',
-    property: 'earned_point',
+    property: 'point',
   },
   {
     label: 'Ngày',
-    property: 'time',
+    property: 'date_time',
     type: TYPE_DATA.DATE,
   },
   {
     label: 'Họ tên nhân viên',
-    property: 'user_id',
   },
   {
     label: 'Số điện thoại',
-    property: 'phone_number',
+    property: 'user.phone_number',
   },
   {
     label: 'Mùa',
-    property: 'season.name',
+    property: 'season.season_name',
   },
   ]
 
@@ -295,7 +324,7 @@ export default {
             ...this.filter,
             page: this.filter.currentPage
         })
-        debugger
+        this.tableData = data.data
         document
           .getElementsByClassName('el-table__body-wrapper')[0]
           .scrollTo(0, 0)
