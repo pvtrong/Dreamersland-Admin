@@ -100,13 +100,26 @@
           <el-input v-model="form.rank_name"></el-input>
         </el-form-item>
         <el-form-item label="Ảnh" prop="img_url">
-          <el-input v-model="form.img_url"></el-input>
+          <!-- input submit image and use this file image to append to form -->
+          <el-upload
+            class="avatar-uploader"
+            action="''"
+            :auto-upload="false"
+            :show-file-list="true"
+            ref="upload"
+            :thumbnail-mode="true"
+            :limit="1"
+            :list-type="'picture'"
+            :on-change="handleChange"
+          >
+            <el-button slot="trigger" size="small" type="primary">select file</el-button>
+          </el-upload>
         </el-form-item>
         <el-form-item label="Điểm tối thiểu" prop="min_point">
-          <el-input v-model="form.min_point"></el-input>
+          <el-input-number v-model="form.min_point" controls-position="right"></el-input-number>
         </el-form-item>
         <el-form-item label="Điểm tối đa" prop="max_point">
-          <el-input v-model="form.max_point"></el-input>
+          <el-input-number v-model="form.max_point" controls-position="right"></el-input-number>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -183,6 +196,7 @@ export default {
       img_url: "",
       min_point: "",
       max_point: "",
+      file: null,
     }
     return {
       formatDate,
@@ -207,11 +221,27 @@ export default {
   },
 
   methods: {
+    handleChange(file) {
+      this.form.img_url = file.url
+      this.form.file = file.raw
+    },
     submit() {
       this.$refs['form'].validate(async (valid) => {
         if (valid) {
           try {
-            this.form.id ? await updateRanking(this.form) : await createRanking(this.form)
+            // create new form data
+            const formData = new FormData()
+
+            // append data to form data
+            for (const key in this.form) {
+              if (this.form.hasOwnProperty(key)) {
+                const element = this.form[key]
+                formData.append(key, element)
+              }
+            }
+
+            
+            this.form.id ? await updateRanking(formData) : await createRanking(formData)
             this.$message({
               message: this.form.id ? 'Cập nhật thành công' : 'Tạo thành công' ,
               type: 'success',
@@ -219,7 +249,7 @@ export default {
             this.dialogFormVisible = false
             this.fetchData()
           } catch (error) {
-            this.form.id ? this.$message.error('Cập nhật thất bại') : this.$message.error('Tạo thất bại')
+            // this.form.id ? this.$message.error('Cập nhật thất bại') : this.$message.error('Tạo thất bại')
           }
         } else {
           return false
@@ -234,6 +264,7 @@ export default {
           img_url: record.img_url,
           min_point: record.min_point,
           max_point: record.max_point,
+          file: null,
         }
       }
       else this.form = defaultForm
@@ -263,18 +294,12 @@ export default {
       try {
         this.loading = true
         const { data } = await getRankings({
-          pagination: {
-            limit: this.filter.limit,
-            offset: (this.filter.currentPage - 1) * this.filter.limit,
-          },
+          ...this.filter,
+          page: this.filter.currentPage,
         })
         this.tableData =
-          data &&
-          data.airdropCampaigns &&
-          data.airdropCampaigns.airdropCampaigns
-            ? data.airdropCampaigns.airdropCampaigns
-            : []
-        this.total = data.airdropCampaigns.pagination.totalRecords
+          data?.data
+        this.total = data?.total
         document
           .getElementsByClassName('el-table__body-wrapper')[0]
           .scrollTo(0, 0)
