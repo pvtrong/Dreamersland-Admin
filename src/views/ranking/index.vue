@@ -1,5 +1,5 @@
 <template>
-  <div class="user-container container">
+  <div class="user-container container" @keydown.enter="fetchData">
     <div class="user__header container__header">Quản lý danh hiệu</div>
     <div class="user__panel">
       <div class="user__panel--name">Danh hiệu</div>
@@ -58,6 +58,21 @@
           </template>
         </el-table-column>
         <el-table-column
+          v-else-if="item.property === 'image_url'"
+          :label="item.label"
+          :type="item.type"
+          :key="index"
+          :width="item.width"
+        >
+          <template #default="scope"
+            >
+            <img
+              :src="scope.row.image_url"
+              style="width: 100px; height: 100px; object-fit: cover"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column
           v-else
           :property="item.property"
           :label="item.label"
@@ -98,7 +113,7 @@
 
     <!-- create dialog add ranking -->
     <el-dialog
-      title="Thêm danh hiệu"
+      :title="this.form.id ? 'Cập nhật danh hiệu' : 'Thêm danh hiệu'"
       :visible.sync="dialogFormVisible"
       width="30%"
       :before-close="handleClose"
@@ -107,7 +122,7 @@
         <el-form-item label="Tên danh hiệu" prop="rank_name">
           <el-input v-model="form.rank_name"></el-input>
         </el-form-item>
-        <el-form-item label="Ảnh" prop="img_url">
+        <el-form-item label="Ảnh" prop="image_url">
           <!-- input submit image and use this file image to append to form -->
           <el-upload
             class="avatar-uploader"
@@ -167,7 +182,7 @@ const tableColumns = [
   },
   {
     label: 'Ảnh',
-    property: 'img_url',
+    property: 'image_url',
   },
   {
     label: 'Điểm tối thiểu',
@@ -185,7 +200,7 @@ const tableColumns = [
   ]
 
 export default {
-  name: 'Users',
+  name: 'Rankings',
   computed: {
     ...mapGetters(['name']),
   },
@@ -201,7 +216,7 @@ export default {
     var defaultForm = {
       id: "",
       rank_name: "",
-      img_url: "",
+      image_url: "",
       min_point: "",
       max_point: "",
       image: null,
@@ -245,7 +260,7 @@ export default {
         .catch(_ => {});
     },
     handleChange(file) {
-      this.form.img_url = file.url
+      this.form.image_url = file.url
       this.form.image = file.raw
     },
     submit() {
@@ -267,7 +282,7 @@ export default {
             {
               formData.delete('id')
             }
-            formData.delete('img_url')
+            formData.delete('image_url')
             
             this.form.id ? await updateRanking(formData) : await createRanking(formData)
             this.$message({
@@ -285,11 +300,14 @@ export default {
       })
     },
     openCreateDialog(record) {
+      this.$nextTick(() => {
+        this.$refs['form'].clearValidate()
+      })
       if(record) {
         this.form = {
           id: record.id,
           rank_name: record.rank_name,
-          img_url: record.img_url,
+          image_url: record.image_url,
           min_point: record.min_point,
           max_point: record.max_point,
           image: null,
@@ -297,6 +315,7 @@ export default {
       }
       else this.form = defaultForm
       this.dialogFormVisible = true
+      
     },
     handleClose(done) {
       this.$confirm('Bạn có chắc chắn muốn thoát?')
