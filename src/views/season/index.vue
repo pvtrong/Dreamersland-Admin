@@ -5,7 +5,7 @@
       <div class="season__panel--name">Mùa</div>
       <div class="season__panel--total">{{ total }}</div>
       <div class="season__panel--filter">
-        <el-input placeholder="Tìm kiếm" v-model="keyword" clearable="true" @clear="fetchData">
+        <el-input placeholder="Tìm kiếm" v-model="keyword" :clearable="true" @clear="fetchData">
           <i slot="prefix" class="el-input__icon el-icon-search"></i>
         </el-input>
       </div>
