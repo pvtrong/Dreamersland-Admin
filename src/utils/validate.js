@@ -71,7 +71,7 @@ export const rules = {
     type: 'string',
     required: true,
     trigger: ['blur', 'change'],
-    message: 'Vui lòng nhập tên mùa',
+    message: 'Vui lòng nhập tên mùa giải',
   },
   start_date: {
     type: 'date',

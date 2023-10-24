@@ -97,13 +97,13 @@ export const constantRoutes = [
   {
     path: '/season',
     component: Layout,
-    meta: { title: 'Quản lý mùa', icon: 'el-icon-data-line', activeMenu: '/season' },
+    meta: { title: 'Quản lý mùa giải', icon: 'el-icon-data-line', activeMenu: '/season' },
     children: [
       {
         path: '/season',
         name: 'Seasons',
         component: () => import('@/views/season/index.vue'),
-        meta: { title: 'Quản lý mùa', icon: 'el-icon-data-line', activeMenu: '/season' },
+        meta: { title: 'Quản lý mùa giải', icon: 'el-icon-data-line', activeMenu: '/season' },
       },
     ],
   },

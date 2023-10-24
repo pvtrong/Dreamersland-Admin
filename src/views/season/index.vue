@@ -1,11 +1,11 @@
 <template>
   <div class="season-container container" @keydown.enter="fetchData">
-    <div class="season__header container__header">Quản lý mùa</div>
+    <div class="season__header container__header">Quản lý mùa giải</div>
     <div class="season__panel">
-      <div class="season__panel--name">Mùa</div>
+      <div class="season__panel--name">Mùa giải</div>
       <div class="season__panel--total">{{ total }}</div>
       <div class="season__panel--filter">
-        <el-input placeholder="Tìm kiếm" v-model="keyword" clearable="true" @clear="fetchData">
+        <el-input placeholder="Tìm kiếm" v-model="keyword" :clearable="true" @clear="fetchData">
           <i slot="prefix" class="el-input__icon el-icon-search"></i>
         </el-input>
       </div>
@@ -31,7 +31,7 @@
           @click="openCreateDialog"
           type="primary"
           icon="el-icon-plus"
-          >Thêm mùa</el-button
+          >Thêm mùa giải</el-button
         >
       </div>
     </div>
@@ -120,13 +120,13 @@
 
     <!-- create dialog add season -->
     <el-dialog
-      title="Thêm mùa"
+      title="Thêm mùa giải"
       :visible.sync="dialogFormVisible"
       width="30%"
       :before-close="handleClose"
     >
-      <el-form :model="form" :rules="rules" ref="form" label-width="120px">
-        <el-form-item label="Tên mùa" prop="season_name">
+      <el-form :model="form" :rules="rules" ref="form" label-width="140px">
+        <el-form-item label="Tên mùa giải giải" prop="season_name">
           <el-input v-model="form.season_name" placeholder="Nhập tên mùa"></el-input>
         </el-form-item>
         <el-form-item label="Ngày bắt đầu" prop="start_date">
@@ -134,25 +134,22 @@
             v-model="form.start_date"
             type="date"
             placeholder="Chọn ngày bắt đầu"
-            value-format="yyyy-MM-dd"
             :picker-options="{
               disabledDate(time) {
-                return time.getTime() < Date.now() - 8.64e7;
+                return time < Date.now();
               },
             }"
             :disabled="new Date(form.start_date) < new Date() && form.id"
           ></el-date-picker>
-          <!-- > Date.Now() -->
         </el-form-item>
         <el-form-item label="Ngày kết thúc" prop="end_date">
           <el-date-picker
             v-model="form.end_date"
             type="date"
             placeholder="Chọn ngày kết thúc"
-            value-format="yyyy-MM-dd"
             :picker-options="{
               disabledDate(time) {
-                return time.getTime() < Date.now() - 8.64e7 || time.getTime() <= new Date(form.start_date);
+                return time < Date.now() || time <= new Date(form.start_date);
               },
             }"
             :disabled="(new Date(form.end_date) < new Date(form.start_date) || new Date(form.end_date) < Date.now()) && form.id"
@@ -191,7 +188,7 @@ const tableColumns = [
     width: '80',
   },
   {
-    label: 'Tên mùa',
+    label: 'Tên mùa giải',
     property: 'season_name',
   },
   {
@@ -226,8 +223,8 @@ export default {
     var defaultForm = {
       id: "",
       season_name: "",
-      start_date: null,
-      end_date: null,
+      start_date: new Date(),
+      end_date: new Date(),
     }
     return {
       formatDate,
@@ -254,6 +251,7 @@ export default {
 
   methods: {
     submit() {
+      debugger
       this.$refs['form'].validate(async (valid) => {
         if (valid) {
           try {
