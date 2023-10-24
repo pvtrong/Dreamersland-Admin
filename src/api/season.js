@@ -1,9 +1,10 @@
 import request from '@/utils/request'
 
-export function createSeason() {
+export function createSeason(data) {
   return request({
     url: '/season',
-    method: 'post'
+    method: 'post',
+    data
   })
 }
 
