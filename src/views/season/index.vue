@@ -168,7 +168,7 @@
 </template>
 
 <script>
-import { getSeasons, createSeason } from '@/api/season'
+import { getSeasons, createSeason, deleteSeason, updateSeason } from '@/api/season'
 import { mapGetters } from 'vuex'
 
 // utils
@@ -250,6 +250,21 @@ export default {
   },
 
   methods: {
+    async handleClickDelete(record) {
+      try {
+        this.$confirm('Bạn có chắc chắn muốn xoá?')
+          .then(async () => {
+            await deleteSeason(record.row.id)
+            this.$message({
+              message: 'Xoá thành công',
+              type: 'success',
+            })
+            this.fetchData()
+          })
+          .catch(() => {})
+      } catch (error) {
+      }
+    },
     submit() {
       debugger
       this.$refs['form'].validate(async (valid) => {
@@ -275,8 +290,8 @@ export default {
         this.form = {
           id: record.id,
           season_name: record.season_name,
-          start_date: record.start_date,
-          end_date: record.end_date,
+          start_date: new Date(record.start_date),
+          end_date: new Date(record.end_date),
         }
       }
       else this.form = defaultForm
@@ -331,9 +346,7 @@ export default {
       }
     },
     handleClickEdit(scope) {
-      this.$router.push({
-        path: `season/put/${scope.row.id}`,
-      })
+      this.openCreateDialog(scope.row)
     },
   },
 
