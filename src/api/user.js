@@ -22,10 +22,11 @@ export function logout() {
   })
 }
 
-export function createUser() {
+export function createUser(data) {
   return request({
     url: '/user',
-    method: 'post'
+    method: 'post',
+    data
   })
 }
 

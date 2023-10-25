@@ -18,12 +18,36 @@ export function validUsername(str) {
   return /(84|0[3|5|7|8|9])+([0-9]{8})\b/g.test(str)
 }
 
+function checkValidPhoneNumber(rule, value, callback) {
+  if (!value) {
+    callback(new Error('Vui lòng nhập số điện thoại'))
+  } else {
+    if (!validUsername(value)) {
+      callback(new Error('Số điện thoại không hợp lệ'))
+    } else {
+      callback()
+    }
+  }
+}
+
+function checkValidEmail(rule, value, callback) {
+  if (!value) {
+    callback()
+  } else {
+    if (!validEmail(value)) {
+      callback(new Error('Email không hợp lệ'))
+    } else {
+      callback()
+    }
+  }
+}
+
 export const rules = {
   email: {
     type: 'string',
-    required: true,
+    required: false,
     trigger: ['blur', 'change'],
-    message: 'Vui lòng nhập email',
+    validator: checkValidEmail,
   },
   first_name: {
     type: 'string',
@@ -43,11 +67,11 @@ export const rules = {
     trigger: ['blur', 'change'],
     message: 'Vui lòng nhập mật khẩu',
   },
-  phone: {
+  phone_number: {
     type: 'string',
     required: true,
     trigger: ['blur', 'change'],
-    message: 'Vui lòng nhập số điện thoại',
+    validator: checkValidPhoneNumber
   },
   rank_name: {
     type: 'string',

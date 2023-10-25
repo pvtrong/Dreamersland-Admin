@@ -301,7 +301,7 @@ export default {
     },
     openCreateDialog(record) {
       this.$nextTick(() => {
-        this.$refs['form'].clearValidate()
+        this.$refs['form']?.clearValidate()
       })
       if(record) {
         this.form = {

@@ -76,6 +76,14 @@
               circle=""
             ></el-button>
           </el-tooltip>
+          <el-tooltip effect="dark" content="Xoá" placement="top">
+            <el-button
+              icon="el-icon-delete"
+              @click="handleClickEdit(scope)"
+              circle=""
+              type="danger"
+            ></el-button>
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
@@ -105,8 +113,8 @@
         <el-form-item label="Email" prop="email">
           <el-input v-model="form.email"></el-input>
         </el-form-item>
-        <el-form-item label="Số điện thoại" prop="phone">
-          <el-input v-model="form.phone"></el-input>
+        <el-form-item label="Số điện thoại" prop="phone_number">
+          <el-input v-model="form.phone_number"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -154,7 +162,7 @@ const tableColumns = [
   },
   {
     label: 'Số điện thoại',
-    property: 'phone',
+    property: 'phone_number',
   },
   {
     label: 'Ngày tạo',
@@ -182,7 +190,7 @@ export default {
       firs_name: "",
       last_name: "",
       email: "",
-      phone: "",
+      phone_number: "",
     }
     return {
       formatDate,
@@ -203,7 +211,7 @@ export default {
       // create dialog
       dialogFormVisible: false,
       form: defaultForm,
-      rules
+      rules: rules
     }
   },
 
@@ -220,7 +228,6 @@ export default {
             this.dialogFormVisible = false
             this.fetchData()
           } catch (error) {
-            this.form.id ? this.$message.error('Cập nhật thất bại') : this.$message.error('Tạo thất bại')
           }
         } else {
           return false
@@ -228,13 +235,17 @@ export default {
       })
     },
     openCreateDialog(record) {
+      this.$nextTick(() => {
+        this.$refs['form']?.clearValidate()
+      })
+      // reset validate
       if(record) {
         this.form = {
           id: record.id,
           firs_name: record.first_name,
           last_name: record.last_name,
           email: record.email,
-          phone: record.phone,
+          phone_number: record.phone_number,
         }
       }
       else this.form = defaultForm
@@ -287,9 +298,7 @@ export default {
       }
     },
     handleClickEdit(scope) {
-      this.$router.push({
-        path: `user/put/${scope.row.id}`,
-      })
+      this.openCreateDialog(scope.row)
     },
   },
 
