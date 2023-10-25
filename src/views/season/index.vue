@@ -286,6 +286,9 @@ export default {
       })
     },
     openCreateDialog(record) {
+      this.$nextTick(() => {
+        this.$refs['form']?.clearValidate()
+      })
       if(record) {
         this.form = {
           id: record.id,
@@ -321,9 +324,8 @@ export default {
       try {
         this.loading = true
         const { data } = await getSeasons({
-            limit: this.filter.limit,
+            ...this.filter,
             page: this.filter.currentPage,
-            season_name: this.filter.keyword
         })
         this.tableData =
         data?.data
@@ -355,7 +357,6 @@ export default {
       handler: function () {
         this.fetchData()
       },
-      deep: true,
     },
   },
 }
