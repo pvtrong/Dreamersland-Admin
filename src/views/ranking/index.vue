@@ -138,11 +138,11 @@
             <el-button slot="trigger" size="small" type="primary">select file</el-button>
           </el-upload>
         </el-form-item>
-        <el-form-item label="Điểm tối thiểu" prop="min_point">
-          <el-input-number v-model="form.min_point" controls-position="right"></el-input-number>
+        <el-form-item label="Mục tiêu ngày" prop="target_day">
+          <el-input-number v-model="form.target_day" controls-position="right"></el-input-number>
         </el-form-item>
-        <el-form-item label="Điểm tối đa" prop="max_point">
-          <el-input-number v-model="form.max_point" controls-position="right"></el-input-number>
+        <el-form-item label="Thứ tự rank" prop="order">
+          <el-input-number v-model="form.order" controls-position="right"></el-input-number>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -185,12 +185,12 @@ const tableColumns = [
     property: 'image_url',
   },
   {
-    label: 'Điểm tối thiểu',
-    property: 'min_point',
+    label: 'Mục tiêu ngày',
+    property: 'target_day',
   },
   {
-    label: 'Điểm tối đa',
-    property: 'max_point',
+    label: 'Thứ tự rank',
+    property: 'order',
   },
   {
     label: 'Ngày tạo',
@@ -217,8 +217,8 @@ export default {
       id: "",
       rank_name: "",
       image_url: "",
-      min_point: "",
-      max_point: "",
+      target_day: "",
+      order: "",
       image: null,
     }
     return {
@@ -308,8 +308,8 @@ export default {
           id: record.id,
           rank_name: record.rank_name,
           image_url: record.image_url,
-          min_point: record.min_point,
-          max_point: record.max_point,
+          target_day: record.target_day,
+          order: record.order,
           image: null,
         }
       }

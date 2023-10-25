@@ -79,17 +79,17 @@ export const rules = {
     trigger: ['blur', 'change'],
     message: 'Vui lòng nhập tên danh hiệu',
   },
-  min_point: {
+  order: {
     type: 'number',
     required: true,
     trigger: ['blur', 'change'],
-    message: 'Vui lòng nhập điểm tối thiểu',
+    message: 'Vui lòng nhập số thứ tự',
   },
-  max_point: {
+  target_day: {
     type: 'number',
     required: true,
     trigger: ['blur', 'change'],
-    message: 'Vui lòng nhập điểm tối đa',
+    message: 'Vui lòng nhập mục tiêu ngày',
   },
   season_name: {
     type: 'string',
