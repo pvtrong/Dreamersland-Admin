@@ -1,11 +1,11 @@
 <template>
-  <div class="user-container container">
+  <div class="user-container container" @keydown.enter="fetchData">
     <div class="user__header container__header">Quản lý nhân viên</div>
     <div class="user__panel">
       <div class="user__panel--name">Nhân viên</div>
       <div class="user__panel--total">{{ total }}</div>
       <div class="user__panel--filter">
-        <el-input placeholder="Tìm kiếm" v-model="keyword">
+        <el-input placeholder="Tìm kiếm" v-model="keyword" :clearable="true" @clear="fetchData">
           <i slot="prefix" class="el-input__icon el-icon-search"></i>
         </el-input>
       </div>
@@ -304,6 +304,7 @@ export default {
       handler: function () {
         this.fetchData()
       },
+      deep: true,
     },
   },
 }
