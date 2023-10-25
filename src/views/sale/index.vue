@@ -307,7 +307,6 @@ export default {
             this.dialogFormVisible = false
             this.fetchData()
           } catch (error) {
-            this.form.id ? this.$message.error('Cập nhật thất bại') : this.$message.error('Tạo thất bại')
           }
         } else {
           return false
@@ -315,6 +314,9 @@ export default {
       })
     },
     openCreateDialog(record) {
+      this.$nextTick(() => {
+        this.$refs['form']?.resetFields()
+      })
       if(record) {
         this.form = {
           id: record.id,

@@ -28,7 +28,7 @@
       </div> -->
       <div class="season__panel--create">
         <el-button
-          @click="openCreateDialog"
+          @click="openCreateDialog()"
           type="primary"
           icon="el-icon-plus"
           >Thêm mùa giải</el-button
@@ -139,7 +139,7 @@
                 return time < Date.now();
               },
             }"
-            :disabled="new Date(form.start_date) < new Date() && form.id"
+            :disabled="new Date(form.start_date).getDate() < new Date().getDate() && form.id"
           ></el-date-picker>
         </el-form-item>
         <el-form-item label="Ngày kết thúc" prop="end_date">
@@ -152,7 +152,7 @@
                 return time < Date.now() || time <= new Date(form.start_date);
               },
             }"
-            :disabled="(new Date(form.end_date) < new Date(form.start_date) || new Date(form.end_date) < Date.now()) && form.id"
+            :disabled="(new Date(form.end_date).getDate() < new Date(form.start_date).getDate() || new Date(form.end_date).getDate() < new Date().getDate()) && form.id"
           ></el-date-picker>
         </el-form-item>
       </el-form>
@@ -206,6 +206,13 @@ const tableColumns = [
   },
   ]
 
+var defaultForm = {
+  id: "",
+  season_name: "",
+  start_date: "",
+  end_date: "",
+}
+
 export default {
   name: 'Seasons',
   computed: {
@@ -220,12 +227,7 @@ export default {
     this.filter.limit = Number(this.filter.limit)
   },
   data() {
-    var defaultForm = {
-      id: "",
-      season_name: "",
-      start_date: new Date(),
-      end_date: new Date(),
-    }
+    
     return {
       formatDate,
       tableColumns,
@@ -266,7 +268,6 @@ export default {
       }
     },
     submit() {
-      debugger
       this.$refs['form'].validate(async (valid) => {
         if (valid) {
           try {
@@ -278,7 +279,6 @@ export default {
             this.dialogFormVisible = false
             this.fetchData()
           } catch (error) {
-            this.form.id ? this.$message.error('Cập nhật thất bại') : this.$message.error('Tạo thất bại')
           }
         } else {
           return false
@@ -287,7 +287,7 @@ export default {
     },
     openCreateDialog(record) {
       this.$nextTick(() => {
-        this.$refs['form']?.clearValidate()
+        this.$refs['form']?.resetFields()
       })
       if(record) {
         this.form = {
