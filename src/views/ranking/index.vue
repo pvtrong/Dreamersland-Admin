@@ -1,5 +1,5 @@
 <template>
-  <div class="user-container container">
+  <div class="user-container container" @keydown.enter="fetchData">
     <div class="user__header container__header">Quản lý danh hiệu</div>
     <div class="user__panel">
       <div class="user__panel--name">Danh hiệu</div>
@@ -58,6 +58,21 @@
           </template>
         </el-table-column>
         <el-table-column
+          v-else-if="item.property === 'image_url'"
+          :label="item.label"
+          :type="item.type"
+          :key="index"
+          :width="item.width"
+        >
+          <template #default="scope"
+            >
+            <img
+              :src="scope.row.image_url"
+              style="width: 100px; height: 100px; object-fit: cover"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column
           v-else
           :property="item.property"
           :label="item.label"
@@ -76,6 +91,14 @@
               circle=""
             ></el-button>
           </el-tooltip>
+          <el-tooltip effect="dark" content="Xoá" placement="top">
+            <el-button
+              icon="el-icon-delete"
+              @click="handleClickDelete(scope)"
+              circle=""
+              type="danger"
+            ></el-button>
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
@@ -90,7 +113,7 @@
 
     <!-- create dialog add ranking -->
     <el-dialog
-      title="Thêm danh hiệu"
+      :title="this.form.id ? 'Cập nhật danh hiệu' : 'Thêm danh hiệu'"
       :visible.sync="dialogFormVisible"
       width="30%"
       :before-close="handleClose"
@@ -99,14 +122,27 @@
         <el-form-item label="Tên danh hiệu" prop="rank_name">
           <el-input v-model="form.rank_name"></el-input>
         </el-form-item>
-        <el-form-item label="Ảnh" prop="img_url">
-          <el-input v-model="form.img_url"></el-input>
+        <el-form-item label="Ảnh" prop="image_url">
+          <!-- input submit image and use this file image to append to form -->
+          <el-upload
+            class="avatar-uploader"
+            action="''"
+            :auto-upload="false"
+            :show-file-list="true"
+            ref="upload"
+            :thumbnail-mode="true"
+            :limit="1"
+            :list-type="'picture'"
+            :on-change="handleChange"
+          >
+            <el-button slot="trigger" size="small" type="primary">select file</el-button>
+          </el-upload>
         </el-form-item>
         <el-form-item label="Điểm tối thiểu" prop="min_point">
-          <el-input v-model="form.min_point"></el-input>
+          <el-input-number v-model="form.min_point" controls-position="right"></el-input-number>
         </el-form-item>
         <el-form-item label="Điểm tối đa" prop="max_point">
-          <el-input v-model="form.max_point"></el-input>
+          <el-input-number v-model="form.max_point" controls-position="right"></el-input-number>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -121,7 +157,7 @@
 </template>
 
 <script>
-import { getRankings, createRanking } from '@/api/ranking'
+import { getRankings, createRanking, updateRanking, deleteRanking } from '@/api/ranking'
 import { mapGetters } from 'vuex'
 
 // utils
@@ -146,7 +182,7 @@ const tableColumns = [
   },
   {
     label: 'Ảnh',
-    property: 'img_url',
+    property: 'image_url',
   },
   {
     label: 'Điểm tối thiểu',
@@ -164,7 +200,7 @@ const tableColumns = [
   ]
 
 export default {
-  name: 'Users',
+  name: 'Rankings',
   computed: {
     ...mapGetters(['name']),
   },
@@ -180,9 +216,10 @@ export default {
     var defaultForm = {
       id: "",
       rank_name: "",
-      img_url: "",
+      image_url: "",
       min_point: "",
       max_point: "",
+      image: null,
     }
     return {
       formatDate,
@@ -207,11 +244,47 @@ export default {
   },
 
   methods: {
+    async handleClickDelete(record) {
+      this.$confirm('Bạn có chắc chắn muốn xoá danh hiệu này?')
+        .then(async _ => {
+          try {
+            await deleteRanking(record.row.id)
+            this.$message({
+              message: 'Xoá thành công',
+              type: 'success',
+            })
+            this.fetchData()
+          } catch (error) {
+          }
+        })
+        .catch(_ => {});
+    },
+    handleChange(file) {
+      this.form.image_url = file.url
+      this.form.image = file.raw
+    },
     submit() {
       this.$refs['form'].validate(async (valid) => {
         if (valid) {
           try {
-            this.form.id ? await updateRanking(this.form) : await createRanking(this.form)
+            // create new form data
+            const formData = new FormData()
+
+            // append data to form data
+            for (const key in this.form) {
+              if (this.form.hasOwnProperty(key)) {
+                const element = this.form[key]
+                formData.append(key, element)
+              }
+            }
+
+            if(!this.form.id) 
+            {
+              formData.delete('id')
+            }
+            formData.delete('image_url')
+            
+            this.form.id ? await updateRanking(formData) : await createRanking(formData)
             this.$message({
               message: this.form.id ? 'Cập nhật thành công' : 'Tạo thành công' ,
               type: 'success',
@@ -219,7 +292,7 @@ export default {
             this.dialogFormVisible = false
             this.fetchData()
           } catch (error) {
-            this.form.id ? this.$message.error('Cập nhật thất bại') : this.$message.error('Tạo thất bại')
+            // this.form.id ? this.$message.error('Cập nhật thất bại') : this.$message.error('Tạo thất bại')
           }
         } else {
           return false
@@ -227,17 +300,22 @@ export default {
       })
     },
     openCreateDialog(record) {
+      this.$nextTick(() => {
+        this.$refs['form'].clearValidate()
+      })
       if(record) {
         this.form = {
           id: record.id,
           rank_name: record.rank_name,
-          img_url: record.img_url,
+          image_url: record.image_url,
           min_point: record.min_point,
           max_point: record.max_point,
+          image: null,
         }
       }
       else this.form = defaultForm
       this.dialogFormVisible = true
+      
     },
     handleClose(done) {
       this.$confirm('Bạn có chắc chắn muốn thoát?')
@@ -263,18 +341,13 @@ export default {
       try {
         this.loading = true
         const { data } = await getRankings({
-          pagination: {
-            limit: this.filter.limit,
-            offset: (this.filter.currentPage - 1) * this.filter.limit,
-          },
+            ...this.filter,
+            page: this.filter.currentPage,
+            rank_name: this.filter.keyword
         })
         this.tableData =
-          data &&
-          data.airdropCampaigns &&
-          data.airdropCampaigns.airdropCampaigns
-            ? data.airdropCampaigns.airdropCampaigns
-            : []
-        this.total = data.airdropCampaigns.pagination.totalRecords
+          data?.data
+        this.total = data?.total
         document
           .getElementsByClassName('el-table__body-wrapper')[0]
           .scrollTo(0, 0)
@@ -301,7 +374,6 @@ export default {
       handler: function () {
         this.fetchData()
       },
-      deep: true,
     },
   },
 }

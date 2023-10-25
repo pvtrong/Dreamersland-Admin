@@ -191,7 +191,7 @@ const tableColumns = [
     property: 'user.phone_number',
   },
   {
-    label: 'Mùa',
+    label: 'Mùa giải',
     property: 'season.season_name',
   },
   ]

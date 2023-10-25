@@ -1,32 +1,32 @@
 import request from '@/utils/request'
 
-export function createRanking(data) {
+export function createSeason(data) {
   return request({
-    url: '/rank',
+    url: '/season',
     method: 'post',
     data
   })
 }
 
-export function updateRanking(data) {
+export function updateSeason(data) {
   return request({
-    url: '/rank',
+    url: '/season',
     method: 'put',
     data
   })
 }
 
-export function getRankings(params) {
+export function getSeasons(params) {
   return request({
-    url: '/rank/search',
+    url: '/season',
     method: 'get',
     params
   })
 }
 
-export function deleteRanking(id) {
+export function deleteSeason(id) {
   return request({
-    url: '/rank/' + id,
+    url: '/season/' + id,
     method: 'delete',
   })
 }
