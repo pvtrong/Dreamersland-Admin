@@ -109,4 +109,22 @@ export const rules = {
     trigger: ['blur', 'change'],
     message: 'Vui lòng nhập ngày kết thúc',
   },
+  date_time: {
+    type: 'date',
+    required: true,
+    trigger: ['blur', 'change'],
+    message: 'Vui lòng nhập ngày',
+  },
+  season_id: {
+    type: 'string',
+    required: true,
+    trigger: ['blur', 'change'],
+    message: 'Vui lòng chọn mùa giải',
+  },
+  amount: {
+    type: 'number',
+    required: true,
+    trigger: ['blur', 'change'],
+    message: 'Vui lòng nhập số tiền',
+  }
 }
