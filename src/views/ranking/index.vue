@@ -118,7 +118,7 @@
       width="30%"
       :before-close="handleClose"
     >
-      <el-form :model="form" :rules="rules" ref="form" label-width="120px">
+      <el-form :model="form" :rules="rules" ref="form" label-width="120px" label-position="left">
         <el-form-item label="Tên danh hiệu" prop="rank_name">
           <el-input v-model="form.rank_name"></el-input>
         </el-form-item>
@@ -239,7 +239,8 @@ export default {
       // create dialog
       dialogFormVisible: false,
       form: defaultForm,
-      rules
+      rules,
+      defaultForm
     }
   },
 
@@ -313,7 +314,7 @@ export default {
           image: null,
         }
       }
-      else this.form = defaultForm
+      else this.form = this.defaultForm
       this.dialogFormVisible = true
       
     },

@@ -5,7 +5,12 @@
       <div class="user__panel--name">Nhân viên</div>
       <div class="user__panel--total">{{ total }}</div>
       <div class="user__panel--filter">
-        <el-input placeholder="Tìm kiếm" v-model="keyword" :clearable="true" @clear="fetchData">
+        <el-input
+          placeholder="Tìm kiếm"
+          v-model="keyword"
+          :clearable="true"
+          @clear="fetchData"
+        >
           <i slot="prefix" class="el-input__icon el-icon-search"></i>
         </el-input>
       </div>
@@ -17,9 +22,7 @@
           :loading="loading"
         ></el-button>
       </div>
-      <div class="user__panel--search">
-        
-      </div>
+      <div class="user__panel--search"></div>
       <!-- <div class="user__panel--edit">
         <el-button type="default" icon="el-icon-edit">EDIT</el-button>
       </div> -->
@@ -27,10 +30,7 @@
         <el-button type="default" icon="el-icon-delete">DELETE</el-button>
       </div> -->
       <div class="user__panel--create">
-        <el-button
-          @click="openCreateDialog"
-          type="primary"
-          icon="el-icon-plus"
+        <el-button @click="openCreateDialog" type="primary" icon="el-icon-plus"
           >Thêm nhân viên</el-button
         >
       </div>
@@ -95,7 +95,7 @@
       width="30%"
       :before-close="handleClose"
     >
-      <el-form :model="form" :rules="rules" ref="form" label-width="120px">
+      <el-form :model="form" :rules="rules" ref="form" label-width="140px" label-position="left">
         <el-form-item label="Tên nhân viên" prop="first_name">
           <el-input v-model="form.first_name"></el-input>
         </el-form-item>
@@ -111,70 +111,67 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">Hủy</el-button>
-        <el-button type="primary" @click="submit"
-          >Lưu</el-button
-        >
+        <el-button type="primary" @click="submit">Lưu</el-button>
       </div>
     </el-dialog>
-
   </div>
 </template>
 
 <script>
-import { getUsers, createUser } from '@/api/user'
-import { mapGetters } from 'vuex'
+import { getUsers, createUser } from "@/api/user";
+import { mapGetters } from "vuex";
 
 // utils
-import { formatDate } from '@/utils/index'
-import { rules } from '@/utils/validate' 
+import { formatDate } from "@/utils/index";
+import { rules } from "@/utils/validate";
 
 // constants
-import { TYPE_DATA } from "@/commons/index.constant"
+import { TYPE_DATA } from "@/commons/index.constant";
 
 const tableColumns = [
   // {
   //   type: "selection",
   // },
   {
-    label: 'ID',
-    property: 'id',
-    width: '80',
+    label: "ID",
+    property: "id",
+    width: "80",
   },
   {
-    label: 'Tên nhân viên',
-    property: 'first_name',
+    label: "Tên nhân viên",
+    property: "first_name",
   },
   {
-    label: 'Họ nhân viên',
-    property: 'last_name',
+    label: "Họ nhân viên",
+    property: "last_name",
   },
   {
-    label: 'Email',
-    property: 'email',
+    label: "Email",
+    property: "email",
   },
   {
-    label: 'Số điện thoại',
-    property: 'phone',
+    label: "Số điện thoại",
+    property: "phone",
   },
   {
-    label: 'Ngày tạo',
-    property: 'createdAt',
+    label: "Ngày tạo",
+    property: "createdAt",
     type: TYPE_DATA.DATE,
   },
-  ]
+];
 
 export default {
-  name: 'Users',
+  name: "Users",
   computed: {
-    ...mapGetters(['name']),
+    ...mapGetters(["name"]),
   },
   created() {
     this.filter = {
       ...this.filter,
       ...this.$route.query,
-    }
-    this.filter.currentPage = Number(this.filter.currentPage)
-    this.filter.limit = Number(this.filter.limit)
+    };
+    this.filter.currentPage = Number(this.filter.currentPage);
+    this.filter.limit = Number(this.filter.limit);
   },
   data() {
     var defaultForm = {
@@ -183,7 +180,7 @@ export default {
       last_name: "",
       email: "",
       phone: "",
-    }
+    };
     return {
       formatDate,
       tableColumns,
@@ -203,113 +200,114 @@ export default {
       // create dialog
       dialogFormVisible: false,
       form: defaultForm,
-      rules
-    }
+      rules,
+      defaultForm
+    };
   },
 
   methods: {
     submit() {
-      this.$refs['form'].validate(async (valid) => {
+      this.$refs["form"].validate(async (valid) => {
         if (valid) {
           try {
-            this.form.id ? await updateUser(this.form) : await createUser(this.form)
+            this.form.id
+              ? await updateUser(this.form)
+              : await createUser(this.form);
             this.$message({
-              message: this.form.id ? 'Cập nhật thành công' : 'Tạo thành công' ,
-              type: 'success',
-            })
-            this.dialogFormVisible = false
-            this.fetchData()
-          } catch (error) {
-          }
+              message: this.form.id ? "Cập nhật thành công" : "Tạo thành công",
+              type: "success",
+            });
+            this.dialogFormVisible = false;
+            this.fetchData();
+          } catch (error) {}
         } else {
-          return false
+          return false;
         }
-      })
+      });
     },
     openCreateDialog(record) {
       this.$nextTick(() => {
-        this.$refs['form']?.resetFields()
-      })
-      if(record) {
+        this.$refs["form"]?.resetFields();
+      });
+      if (record) {
         this.form = {
           id: record.id,
           firs_name: record.first_name,
           last_name: record.last_name,
           email: record.email,
           phone: record.phone,
-        }
-      }
-      else this.form = defaultForm
-      this.dialogFormVisible = true
+        };
+      } else this.form = this.defaultForm;
+      this.dialogFormVisible = true;
     },
     handleClose(done) {
-      this.$confirm('Bạn có chắc chắn muốn thoát?')
-        .then(_ => {
+      this.$confirm("Bạn có chắc chắn muốn thoát?")
+        .then((_) => {
           done();
         })
-        .catch(_ => {});
+        .catch((_) => {});
     },
     toggleSelection(rows) {
       if (rows) {
         rows.forEach((row) => {
-          this.$refs.multipleTable.toggleRowSelection(row)
-        })
+          this.$refs.multipleTable.toggleRowSelection(row);
+        });
       } else {
-        this.$refs.multipleTable.clearSelection()
+        this.$refs.multipleTable.clearSelection();
       }
     },
     handleSelectionChange(val) {
-      this.multipleSelection = val
+      this.multipleSelection = val;
     },
     async fetchData() {
-      this.filter.keyword = this.keyword
+      this.filter.keyword = this.keyword;
       try {
-        this.loading = true
+        this.loading = true;
         const { data } = await getUsers({
           pagination: {
             limit: this.filter.limit,
             offset: (this.filter.currentPage - 1) * this.filter.limit,
           },
-        })
+        });
         this.tableData =
           data &&
           data.airdropCampaigns &&
           data.airdropCampaigns.airdropCampaigns
             ? data.airdropCampaigns.airdropCampaigns
-            : []
-        this.total = data.airdropCampaigns.pagination.totalRecords
+            : [];
+        this.total = data.airdropCampaigns.pagination.totalRecords;
         document
-          .getElementsByClassName('el-table__body-wrapper')[0]
-          .scrollTo(0, 0)
+          .getElementsByClassName("el-table__body-wrapper")[0]
+          .scrollTo(0, 0);
         if (!this.isFirstGetData)
           this.$router.push({
             path: this.$route.path,
             query: {
               ...this.filter,
             },
-          })
-        else this.isFirstGetData = false
+          });
+        else this.isFirstGetData = false;
       } catch (error) {
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
     handleClickEdit(scope) {
       this.$router.push({
         path: `user/put/${scope.row.id}`,
-      })
+      });
     },
   },
 
   watch: {
     filter: {
       handler: function () {
-        this.fetchData()
+        this.fetchData();
       },
       deep: true,
     },
   },
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -322,7 +320,7 @@ export default {
     align-items: center;
     gap: 20px;
     &--name {
-      font-family: 'Exo';
+      font-family: "Exo";
       font-style: normal;
       font-weight: 600;
       font-size: 15px;
@@ -333,7 +331,7 @@ export default {
       text-transform: uppercase;
     }
     &--total {
-      font-family: 'Exo';
+      font-family: "Exo";
       font-style: normal;
       font-weight: 600;
       font-size: 13px;
