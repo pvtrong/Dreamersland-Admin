@@ -219,7 +219,8 @@ export default {
     }
     this.filter.currentPage = Number(this.filter.currentPage)
     this.filter.limit = Number(this.filter.limit)
-    this.filter.season_id = this.filter.season_id ? Number(this.filter.season_id) : ""
+    const current_season = this.seasons.find(season => season.is_current_season === true)
+    this.filter.season_id = this.filter.season_id ? Number(this.filter.season_id) : current_season.id;
     
   },
   data() {

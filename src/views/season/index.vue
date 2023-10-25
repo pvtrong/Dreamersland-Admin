@@ -80,6 +80,19 @@
           </template>
         </el-table-column>
         <el-table-column
+          v-else-if="item.property === 'is_current_season'"
+          :label="item.label"
+          :type="item.type"
+          :key="index"
+          :width="item.width"
+        >
+          <template #default="scope"
+            >
+            <el-tag v-if="scope.row.is_current_season" type="success">Đang diễn ra</el-tag>
+            <el-tag v-else type="info">{{ new Date(scope.row.end_date).getDate() > new Date().getDate() ? 'Đã qua' : 'Chưa diễn ra'  }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
           v-else
           :property="item.property"
           :label="item.label"
@@ -139,7 +152,7 @@
                 return time < Date.now();
               },
             }"
-            :disabled="new Date(form.start_date).getDate() < new Date().getDate() && form.id"
+            :disabled="new Date(form.start_date).getDate() < new Date().getDate() && form.id.length > 0"
           ></el-date-picker>
         </el-form-item>
         <el-form-item label="Ngày kết thúc" prop="end_date">
@@ -152,7 +165,7 @@
                 return time < Date.now() || time <= new Date(form.start_date);
               },
             }"
-            :disabled="(new Date(form.end_date).getDate() < new Date(form.start_date).getDate() || new Date(form.end_date).getDate() < new Date().getDate()) && form.id"
+            :disabled="(new Date(form.end_date).getDate() < new Date(form.start_date).getDate() || new Date(form.end_date).getDate() < new Date().getDate()) && form.id.length > 0"
           ></el-date-picker>
         </el-form-item>
       </el-form>
@@ -203,6 +216,10 @@ const tableColumns = [
     label: 'Ngày tạo',
     property: 'createdAt',
     type: TYPE_DATA.DATE,
+  },
+  {
+    label: 'Hiện tại',
+    property: 'is_current_season',
   },
   ]
 
