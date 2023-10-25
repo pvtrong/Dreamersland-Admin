@@ -301,7 +301,7 @@ export default {
     },
     openCreateDialog(record) {
       this.$nextTick(() => {
-        this.$refs['form'].clearValidate()
+        this.$refs['form'].resetFields()
       })
       if(record) {
         this.form = {
@@ -374,6 +374,7 @@ export default {
       handler: function () {
         this.fetchData()
       },
+      deep: true,
     },
   },
 }

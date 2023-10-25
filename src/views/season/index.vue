@@ -28,7 +28,7 @@
       </div> -->
       <div class="season__panel--create">
         <el-button
-          @click="openCreateDialog"
+          @click="openCreateDialog()"
           type="primary"
           icon="el-icon-plus"
           >Thêm mùa giải</el-button
@@ -77,6 +77,19 @@
         >
           <template #default="scope"
             >{{ formatDate(scope.row.createdAt) }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-else-if="item.property === 'is_current_season'"
+          :label="item.label"
+          :type="item.type"
+          :key="index"
+          :width="item.width"
+        >
+          <template #default="scope"
+            >
+            <el-tag v-if="scope.row.is_current_season" type="success">Đang diễn ra</el-tag>
+            <el-tag v-else type="info">{{ new Date(scope.row.end_date).getDate() > new Date().getDate() ? 'Đã qua' : 'Chưa diễn ra'  }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
@@ -139,7 +152,7 @@
                 return time < Date.now();
               },
             }"
-            :disabled="new Date(form.start_date) < new Date() && form.id"
+            :disabled="new Date(form.start_date).getDate() < new Date().getDate() && form.id.length > 0"
           ></el-date-picker>
         </el-form-item>
         <el-form-item label="Ngày kết thúc" prop="end_date">
@@ -152,7 +165,7 @@
                 return time < Date.now() || time <= new Date(form.start_date);
               },
             }"
-            :disabled="(new Date(form.end_date) < new Date(form.start_date) || new Date(form.end_date) < Date.now()) && form.id"
+            :disabled="(new Date(form.end_date).getDate() < new Date(form.start_date).getDate() || new Date(form.end_date).getDate() < new Date().getDate()) && form.id.length > 0"
           ></el-date-picker>
         </el-form-item>
       </el-form>
@@ -204,7 +217,18 @@ const tableColumns = [
     property: 'createdAt',
     type: TYPE_DATA.DATE,
   },
+  {
+    label: 'Hiện tại',
+    property: 'is_current_season',
+  },
   ]
+
+var defaultForm = {
+  id: "",
+  season_name: "",
+  start_date: "",
+  end_date: "",
+}
 
 export default {
   name: 'Seasons',
@@ -220,12 +244,7 @@ export default {
     this.filter.limit = Number(this.filter.limit)
   },
   data() {
-    var defaultForm = {
-      id: "",
-      season_name: "",
-      start_date: new Date(),
-      end_date: new Date(),
-    }
+    
     return {
       formatDate,
       tableColumns,
@@ -266,7 +285,6 @@ export default {
       }
     },
     submit() {
-      debugger
       this.$refs['form'].validate(async (valid) => {
         if (valid) {
           try {
@@ -278,7 +296,6 @@ export default {
             this.dialogFormVisible = false
             this.fetchData()
           } catch (error) {
-            this.form.id ? this.$message.error('Cập nhật thất bại') : this.$message.error('Tạo thất bại')
           }
         } else {
           return false
@@ -287,7 +304,7 @@ export default {
     },
     openCreateDialog(record) {
       this.$nextTick(() => {
-        this.$refs['form']?.clearValidate()
+        this.$refs['form']?.resetFields()
       })
       if(record) {
         this.form = {
@@ -357,6 +374,7 @@ export default {
       handler: function () {
         this.fetchData()
       },
+      deep: true,
     },
   },
 }

@@ -1,11 +1,11 @@
 <template>
-  <div class="user-container container">
+  <div class="user-container container" @keydown.enter="fetchData">
     <div class="user__header container__header">Quản lý nhân viên</div>
     <div class="user__panel">
       <div class="user__panel--name">Nhân viên</div>
       <div class="user__panel--total">{{ total }}</div>
       <div class="user__panel--filter">
-        <el-input placeholder="Tìm kiếm" v-model="keyword">
+        <el-input placeholder="Tìm kiếm" v-model="keyword" :clearable="true" @clear="fetchData">
           <i slot="prefix" class="el-input__icon el-icon-search"></i>
         </el-input>
       </div>
@@ -220,7 +220,6 @@ export default {
             this.dialogFormVisible = false
             this.fetchData()
           } catch (error) {
-            this.form.id ? this.$message.error('Cập nhật thất bại') : this.$message.error('Tạo thất bại')
           }
         } else {
           return false
@@ -228,6 +227,9 @@ export default {
       })
     },
     openCreateDialog(record) {
+      this.$nextTick(() => {
+        this.$refs['form']?.resetFields()
+      })
       if(record) {
         this.form = {
           id: record.id,
@@ -304,6 +306,7 @@ export default {
       handler: function () {
         this.fetchData()
       },
+      deep: true,
     },
   },
 }

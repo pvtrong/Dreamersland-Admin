@@ -1,13 +1,22 @@
 <template>
-  <div class="user-container container">
-    <div class="user__header container__header">Quản lý doanh số</div>
-    <div class="user__panel">
-      <div class="user__panel--name">Doanh số</div>
-      <div class="user__panel--total">{{ total }}</div>
-      <div class="user__panel--filter">
-        <!-- <el-input placeholder="Tìm kiếm" v-model="keyword">
+  <div class="sale-container container" @keydown.enter="fetchData">
+    <div class="sale__header container__header">Quản lý doanh số</div>
+    <div class="sale__panel">
+      <div class="sale__panel--name">Doanh số</div>
+      <div class="sale__panel--total">{{ total }}</div>
+      <div class="sale__panel--filter">
+        <el-input placeholder="Tìm kiếm" v-model="keyword" :clearable="true" @clear="fetchData" style="max-width: 200px;">
           <i slot="prefix" class="el-input__icon el-icon-search"></i>
-        </el-input> -->
+        </el-input>
+        <!-- create select season -->
+        <el-select v-model="filter.season_id" placeholder="Chọn mùa giải" style="width: 200px" :clearable="true" @clear="fetchData">
+          <el-option
+            v-for="item in seasons"
+            :key="item.id"
+            :label="item.season_name"
+            :value="item.id"
+          ></el-option>
+        </el-select>
       </div>
       <div class="course__panel--edit">
         <el-button
@@ -17,16 +26,16 @@
           :loading="loading"
         ></el-button>
       </div>
-      <div class="user__panel--search">
+      <div class="sale__panel--search">
         
       </div>
-      <!-- <div class="user__panel--edit">
+      <!-- <div class="sale__panel--edit">
         <el-button type="default" icon="el-icon-edit">EDIT</el-button>
       </div> -->
-      <!-- <div class="user__panel--delete">
+      <!-- <div class="sale__panel--delete">
         <el-button type="default" icon="el-icon-delete">DELETE</el-button>
       </div> -->
-      <div class="user__panel--create">
+      <div class="sale__panel--create">
         <el-button
           @click="openCreateDialog"
           type="primary"
@@ -152,6 +161,7 @@
 
 <script>
 import { getSales, deleteSale } from '@/api/sale'
+import { getSeasons } from "@/api/season"
 import { mapGetters } from 'vuex'
 
 // utils
@@ -202,14 +212,16 @@ export default {
     ...mapGetters(['name']),
   },
   async created() {
+    await Promise.all([this.fetchUsers(), this.fetchSeasons()])
     this.filter = {
       ...this.filter,
       ...this.$route.query,
     }
     this.filter.currentPage = Number(this.filter.currentPage)
     this.filter.limit = Number(this.filter.limit)
+    const current_season = this.seasons.find(season => season.is_current_season === true)
+    this.filter.season_id = this.filter.season_id ? Number(this.filter.season_id) : current_season.id;
     
-    await Promise.all([this.fetchUsers(), this.fetchSeasons()])
   },
   data() {
     var defaultForm = {
@@ -229,9 +241,10 @@ export default {
       filter: {
         limit: 10,
         currentPage: 1,
-        session_id: null,
+        season_id: null,
         user_id: null,
         date_time: null,
+        keyword: "",
       },
       loading: false,
       isFirstGetData: true,
@@ -278,7 +291,7 @@ export default {
           limit: 10000,
           page: 1,
         })
-        this.seasons = data.data
+        this.seasons = data?.data
       } catch (error) {
         this.$message.error('Lỗi lấy danh sách mùa')
       }
@@ -295,7 +308,6 @@ export default {
             this.dialogFormVisible = false
             this.fetchData()
           } catch (error) {
-            this.form.id ? this.$message.error('Cập nhật thất bại') : this.$message.error('Tạo thất bại')
           }
         } else {
           return false
@@ -303,6 +315,9 @@ export default {
       })
     },
     openCreateDialog(record) {
+      this.$nextTick(() => {
+        this.$refs['form']?.resetFields()
+      })
       if(record) {
         this.form = {
           id: record.id,
@@ -335,6 +350,7 @@ export default {
       this.multipleSelection = val
     },
     async fetchData() {
+      this.filter.keyword = this.keyword
       try {
         this.loading = true
         const { data } = await getSales({
@@ -370,13 +386,14 @@ export default {
       handler: function () {
         this.fetchData()
       },
+      deep: true,
     },
   },
 }
 </script>
 
 <style lang="scss" scoped>
-.user {
+.sale {
   &__panel {
     display: flex;
     padding-bottom: 12px;
@@ -409,6 +426,10 @@ export default {
     }
     &--create {
       margin-left: auto;
+    }
+    &--filter {
+      display: flex;
+      gap: 20px;
     }
   }
 }
