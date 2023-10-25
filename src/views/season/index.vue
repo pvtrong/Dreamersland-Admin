@@ -1,15 +1,15 @@
 <template>
-  <div class="user-container container">
-    <div class="user__header container__header">Quản lý nhân viên</div>
-    <div class="user__panel">
-      <div class="user__panel--name">Nhân viên</div>
-      <div class="user__panel--total">{{ total }}</div>
-      <div class="user__panel--filter">
-        <el-input placeholder="Tìm kiếm" v-model="keyword">
+  <div class="season-container container" @keydown.enter="fetchData">
+    <div class="season__header container__header">Quản lý mùa giải</div>
+    <div class="season__panel">
+      <div class="season__panel--name">Mùa giải</div>
+      <div class="season__panel--total">{{ total }}</div>
+      <div class="season__panel--filter">
+        <el-input placeholder="Tìm kiếm" v-model="keyword" :clearable="true" @clear="fetchData">
           <i slot="prefix" class="el-input__icon el-icon-search"></i>
         </el-input>
       </div>
-      <div class="course__panel--edit">
+      <div class="season__panel--edit">
         <el-button
           @click="fetchData"
           type="primary"
@@ -17,21 +17,21 @@
           :loading="loading"
         ></el-button>
       </div>
-      <div class="user__panel--search">
+      <div class="season__panel--search">
         
       </div>
-      <!-- <div class="user__panel--edit">
+      <!-- <div class="season__panel--edit">
         <el-button type="default" icon="el-icon-edit">EDIT</el-button>
       </div> -->
-      <!-- <div class="user__panel--delete">
+      <!-- <div class="season__panel--delete">
         <el-button type="default" icon="el-icon-delete">DELETE</el-button>
       </div> -->
-      <div class="user__panel--create">
+      <div class="season__panel--create">
         <el-button
           @click="openCreateDialog"
           type="primary"
           icon="el-icon-plus"
-          >Thêm nhân viên</el-button
+          >Thêm mùa giải</el-button
         >
       </div>
     </div>
@@ -47,7 +47,29 @@
     >
       <template v-for="(item, index) in tableColumns">
         <el-table-column
-          v-if="item.type === TYPE_DATA.DATE"
+          v-if="item.property === 'end_date'"
+          :label="item.label"
+          :type="item.type"
+          :key="index"
+          :width="item.width"
+        >
+          <template #default="scope"
+            >{{ formatDate(scope.row.end_date) }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-else-if="item.property === 'start_date'"
+          :label="item.label"
+          :type="item.type"
+          :key="index"
+          :width="item.width"
+        >
+          <template #default="scope"
+            >{{ formatDate(scope.row.start_date) }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-else-if="item.property === 'createdAt'"
           :label="item.label"
           :type="item.type"
           :key="index"
@@ -69,11 +91,19 @@
       </template>
       <el-table-column label="Hành động" width="120">
         <template slot-scope="scope">
-          <el-tooltip effect="dark" content="Edit" placement="top">
+          <el-tooltip effect="dark" content="Sửa" placement="top">
             <el-button
               icon="el-icon-edit"
               @click="handleClickEdit(scope)"
               circle=""
+            ></el-button>
+          </el-tooltip>
+          <el-tooltip effect="dark" content="Xoá" placement="top">
+            <el-button
+              icon="el-icon-delete"
+              @click="handleClickDelete(scope)"
+              circle=""
+              type="danger"
             ></el-button>
           </el-tooltip>
         </template>
@@ -88,25 +118,42 @@
     >
     </el-pagination>
 
-    <!-- create dialog add user -->
+    <!-- create dialog add season -->
     <el-dialog
-      title="Thêm nhân viên"
+      title="Thêm mùa giải"
       :visible.sync="dialogFormVisible"
       width="30%"
       :before-close="handleClose"
     >
-      <el-form :model="form" :rules="rules" ref="form" label-width="120px">
-        <el-form-item label="Tên nhân viên" prop="first_name">
-          <el-input v-model="form.first_name"></el-input>
+      <el-form :model="form" :rules="rules" ref="form" label-width="140px">
+        <el-form-item label="Tên mùa giải giải" prop="season_name">
+          <el-input v-model="form.season_name" placeholder="Nhập tên mùa"></el-input>
         </el-form-item>
-        <el-form-item label="Họ nhân viên" prop="last_name">
-          <el-input v-model="form.last_name"></el-input>
+        <el-form-item label="Ngày bắt đầu" prop="start_date">
+          <el-date-picker
+            v-model="form.start_date"
+            type="date"
+            placeholder="Chọn ngày bắt đầu"
+            :picker-options="{
+              disabledDate(time) {
+                return time < Date.now();
+              },
+            }"
+            :disabled="new Date(form.start_date) < new Date() && form.id"
+          ></el-date-picker>
         </el-form-item>
-        <el-form-item label="Email" prop="email">
-          <el-input v-model="form.email"></el-input>
-        </el-form-item>
-        <el-form-item label="Số điện thoại" prop="phone">
-          <el-input v-model="form.phone"></el-input>
+        <el-form-item label="Ngày kết thúc" prop="end_date">
+          <el-date-picker
+            v-model="form.end_date"
+            type="date"
+            placeholder="Chọn ngày kết thúc"
+            :picker-options="{
+              disabledDate(time) {
+                return time < Date.now() || time <= new Date(form.start_date);
+              },
+            }"
+            :disabled="(new Date(form.end_date) < new Date(form.start_date) || new Date(form.end_date) < Date.now()) && form.id"
+          ></el-date-picker>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -121,7 +168,7 @@
 </template>
 
 <script>
-import { getUsers, createUser } from '@/api/user'
+import { getSeasons, createSeason, deleteSeason, updateSeason } from '@/api/season'
 import { mapGetters } from 'vuex'
 
 // utils
@@ -141,20 +188,16 @@ const tableColumns = [
     width: '80',
   },
   {
-    label: 'Tên nhân viên',
-    property: 'first_name',
+    label: 'Tên mùa giải',
+    property: 'season_name',
   },
   {
-    label: 'Họ nhân viên',
-    property: 'last_name',
+    label: 'Ngày bắt đầu',
+    property: 'start_date',
   },
   {
-    label: 'Email',
-    property: 'email',
-  },
-  {
-    label: 'Số điện thoại',
-    property: 'phone',
+    label: 'Ngày kết thúc',
+    property: 'end_date',
   },
   {
     label: 'Ngày tạo',
@@ -164,7 +207,7 @@ const tableColumns = [
   ]
 
 export default {
-  name: 'Users',
+  name: 'Seasons',
   computed: {
     ...mapGetters(['name']),
   },
@@ -179,10 +222,9 @@ export default {
   data() {
     var defaultForm = {
       id: "",
-      firs_name: "",
-      last_name: "",
-      email: "",
-      phone: "",
+      season_name: "",
+      start_date: new Date(),
+      end_date: new Date(),
     }
     return {
       formatDate,
@@ -208,11 +250,27 @@ export default {
   },
 
   methods: {
+    async handleClickDelete(record) {
+      try {
+        this.$confirm('Bạn có chắc chắn muốn xoá?')
+          .then(async () => {
+            await deleteSeason(record.row.id)
+            this.$message({
+              message: 'Xoá thành công',
+              type: 'success',
+            })
+            this.fetchData()
+          })
+          .catch(() => {})
+      } catch (error) {
+      }
+    },
     submit() {
+      debugger
       this.$refs['form'].validate(async (valid) => {
         if (valid) {
           try {
-            this.form.id ? await updateUser(this.form) : await createUser(this.form)
+            this.form.id ? await updateSeason(this.form) : await createSeason(this.form)
             this.$message({
               message: this.form.id ? 'Cập nhật thành công' : 'Tạo thành công' ,
               type: 'success',
@@ -228,13 +286,15 @@ export default {
       })
     },
     openCreateDialog(record) {
+      this.$nextTick(() => {
+        this.$refs['form']?.clearValidate()
+      })
       if(record) {
         this.form = {
           id: record.id,
-          firs_name: record.first_name,
-          last_name: record.last_name,
-          email: record.email,
-          phone: record.phone,
+          season_name: record.season_name,
+          start_date: new Date(record.start_date),
+          end_date: new Date(record.end_date),
         }
       }
       else this.form = defaultForm
@@ -263,19 +323,14 @@ export default {
       this.filter.keyword = this.keyword
       try {
         this.loading = true
-        const { data } = await getUsers({
-          pagination: {
-            limit: this.filter.limit,
-            offset: (this.filter.currentPage - 1) * this.filter.limit,
-          },
+        const { data } = await getSeasons({
+            ...this.filter,
+            page: this.filter.currentPage,
         })
         this.tableData =
-          data &&
-          data.airdropCampaigns &&
-          data.airdropCampaigns.airdropCampaigns
-            ? data.airdropCampaigns.airdropCampaigns
-            : []
-        this.total = data.airdropCampaigns.pagination.totalRecords
+        data?.data
+          
+        this.total = data.total
         document
           .getElementsByClassName('el-table__body-wrapper')[0]
           .scrollTo(0, 0)
@@ -293,9 +348,7 @@ export default {
       }
     },
     handleClickEdit(scope) {
-      this.$router.push({
-        path: `user/put/${scope.row.id}`,
-      })
+      this.openCreateDialog(scope.row)
     },
   },
 
@@ -310,7 +363,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.user {
+.season {
   &__panel {
     display: flex;
     padding-bottom: 12px;

@@ -151,7 +151,7 @@
 </template>
 
 <script>
-import { getSales } from '@/api/sale'
+import { getSales, deleteSale } from '@/api/sale'
 import { mapGetters } from 'vuex'
 
 // utils
@@ -244,6 +244,23 @@ export default {
   },
 
   methods: {
+    async handleClickDelete(scope) {
+      // alert delete
+      this.$confirm('Bạn có chắc chắn muốn xoá?')
+        .then(async () => {
+          try {
+            await deleteSale(scope.row.id)
+            this.$message({
+              message: 'Xoá thành công',
+              type: 'success',
+            })
+            this.fetchData()
+          } catch (error) {
+            this.$message.error('Xoá thất bại')
+          }
+        })
+        .catch(() => {})
+    },
     async fetchUsers() {
       try {
         const { data } = await getUsers({
@@ -324,7 +341,9 @@ export default {
             ...this.filter,
             page: this.filter.currentPage
         })
-        this.tableData = data.data
+        this.tableData = data?.data
+        this.total = data?.total
+
         document
           .getElementsByClassName('el-table__body-wrapper')[0]
           .scrollTo(0, 0)
@@ -351,7 +370,6 @@ export default {
       handler: function () {
         this.fetchData()
       },
-      deep: true,
     },
   },
 }
