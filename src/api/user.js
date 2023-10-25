@@ -29,9 +29,10 @@ export function createUser() {
   })
 }
 
-export function getUsers() {
+export function getUsers(params) {
   return request({
-    url: '/user',
+    url: '/admin/list_user',
     method: 'get',
+    params
   })
 }

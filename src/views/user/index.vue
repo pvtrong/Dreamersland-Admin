@@ -90,7 +90,7 @@
 
     <!-- create dialog add user -->
     <el-dialog
-      title="Thêm nhân viên"
+      :title="form.id ? 'Cập nhật nhân viên' : 'Thêm nhân viên'"
       :visible.sync="dialogFormVisible"
       width="30%"
       :before-close="handleClose"
@@ -264,18 +264,12 @@ export default {
       try {
         this.loading = true
         const { data } = await getUsers({
-          pagination: {
-            limit: this.filter.limit,
-            offset: (this.filter.currentPage - 1) * this.filter.limit,
-          },
+            ...this.filter,
+            page: this.filter.currentPage,
         })
         this.tableData =
-          data &&
-          data.airdropCampaigns &&
-          data.airdropCampaigns.airdropCampaigns
-            ? data.airdropCampaigns.airdropCampaigns
-            : []
-        this.total = data.airdropCampaigns.pagination.totalRecords
+          data?.data
+        this.total = data?.total
         document
           .getElementsByClassName('el-table__body-wrapper')[0]
           .scrollTo(0, 0)

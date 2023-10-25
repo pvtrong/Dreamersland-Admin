@@ -321,9 +321,8 @@ export default {
       try {
         this.loading = true
         const { data } = await getSeasons({
-            limit: this.filter.limit,
+            ...this.filter,
             page: this.filter.currentPage,
-            season_name: this.filter.keyword
         })
         this.tableData =
         data?.data
