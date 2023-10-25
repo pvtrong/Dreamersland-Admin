@@ -24,7 +24,7 @@ export function logout() {
 
 export function createUser(data) {
   return request({
-    url: '/user',
+    url: '/user/signup',
     method: 'post',
     data
   })
@@ -35,5 +35,13 @@ export function getUsers(params) {
     url: '/admin/list_user',
     method: 'get',
     params
+  })
+}
+
+export function updateUser(data) {
+  return request({
+    url: '/user/update_profile',
+    method: 'post',
+    data
   })
 }

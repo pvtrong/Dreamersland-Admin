@@ -116,6 +116,9 @@
         <el-form-item label="Số điện thoại" prop="phone_number">
           <el-input v-model="form.phone_number"></el-input>
         </el-form-item>
+        <el-form-item label="Mật khẩu" prop="password">
+          <el-input v-model="form.password"></el-input>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">Hủy</el-button>
@@ -126,7 +129,7 @@
 </template>
 
 <script>
-import { getUsers, createUser } from "@/api/user";
+import { getUsers, createUser, updateUser } from "@/api/user";
 import { mapGetters } from "vuex";
 
 // utils
@@ -188,6 +191,7 @@ export default {
       last_name: "",
       email: "",
       phone_number: "",
+      password: "",
     }
     return {
       formatDate,
@@ -244,6 +248,7 @@ export default {
           last_name: record.last_name,
           email: record.email,
           phone_number: record.phone_number,
+          password: record.password,
         };
       } else this.form = this.defaultForm;
       this.dialogFormVisible = true;

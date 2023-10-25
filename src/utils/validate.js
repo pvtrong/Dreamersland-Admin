@@ -18,6 +18,11 @@ export function validUsername(str) {
   return /(84|0[3|5|7|8|9])+([0-9]{8})\b/g.test(str)
 }
 
+export function validEmail(str) {
+  return /\S+@\S+\.\S+/.test(str)
+}
+
+
 function checkValidPhoneNumber(rule, value, callback) {
   if (!value) {
     callback(new Error('Vui lòng nhập số điện thoại'))
