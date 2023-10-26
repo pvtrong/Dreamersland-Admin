@@ -7,3 +7,10 @@ export function getSales(params) {
     params
   })
 }
+
+export function deleteSale(id) {
+  return request({
+    url: '/sales/' + id,
+    method: 'delete',
+  })
+}
