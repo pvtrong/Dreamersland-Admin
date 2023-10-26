@@ -164,55 +164,57 @@
         :loading="loadingUser"
       ></el-button>
 
-      <el-form :model="form" :rules="rules" ref="form" label-width="120px" label-position="left">
-        <el-table
-          ref="multipleTable"
-          :data="
-            users.filter(
-              (data) =>
-                !search ||
-                data.name.toLowerCase().includes(search.toLowerCase())
-            )
-          "
-          style="width: 100%; height: 50vh"
-          @selection-change="handleSelectionChange"
-          stripe
-          class="table-content"
-          scrollbar-always-on
-          v-loading="loadingUser"
-        >
-          <template v-for="(item, index) in tableColumnsUser">
-            <el-table-column
-              v-if="item.type === TYPE_DATA.DATE"
-              :label="item.label"
-              :type="item.type"
-              :key="index"
-              :width="item.width"
-            >
-              <template #default="scope"
-                >{{ formatDate(scope.row.createdAt) }}
-              </template>
-            </el-table-column>
-            <el-table-column
-              v-else
-              :property="item.property"
-              :label="item.label"
-              :type="item.type"
-              :width="item.width"
-              :key="index"
-            >
-            </el-table-column>
-          </template>
-        </el-table>
-        <el-pagination
-          background
-          layout="prev, pager, next"
-          :total="totalUser"
-          :page-size="filterUser.limit"
-          :current-page.sync="filterUser.currentPage"
-          style="margin: 20px 0;"
-        >
-        </el-pagination>
+      <el-table
+        ref="multipleTable"
+        :data="
+          users
+        "
+        style="width: 100%; height: 50vh"
+        @selection-change="handleSelectionChange"
+        stripe
+        class="table-user"
+        scrollbar-always-on
+        v-loading="loadingUser"
+      >
+        <template v-for="(item, index) in tableColumnsUser">
+          <el-table-column
+            v-if="item.type === TYPE_DATA.DATE"
+            :label="item.label"
+            :type="item.type"
+            :key="index"
+            :width="item.width"
+          >
+            <template #default="scope"
+              >{{ formatDate(scope.row.createdAt) }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            v-else
+            :property="item.property"
+            :label="item.label"
+            :type="item.type"
+            :width="item.width"
+            :key="index"
+          >
+          </el-table-column>
+        </template>
+      </el-table>
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="totalUser"
+        :page-size="filterUser.limit"
+        :current-page.sync="filterUser.currentPage"
+        style="margin: 20px 0"
+      >
+      </el-pagination>
+      <el-form
+        :model="form"
+        :rules="rules"
+        ref="form"
+        label-width="120px"
+        label-position="left"
+      >
         <el-form-item label="Doanh số" prop="amount">
           <el-input-number
             v-model="form.amount"
@@ -228,10 +230,7 @@
         </el-form-item>
         <!-- select season -->
         <el-form-item label="Mùa giải" prop="season_id">
-          <el-select
-            v-model="form.season_id"
-            placeholder="Chọn mùa giải"
-          >
+          <el-select v-model="form.season_id" placeholder="Chọn mùa giải">
             <el-option
               v-for="item in seasons"
               :key="item.id"
@@ -250,7 +249,7 @@
 </template>
 
 <script>
-import { getSales, deleteSale } from "@/api/sale";
+import { getSales, deleteSale, createSale, updateSale } from "@/api/sale";
 import { getSeasons } from "@/api/season";
 import { mapGetters } from "vuex";
 
@@ -320,7 +319,7 @@ const tableColumnsUser = [
   },
   {
     label: "Số điện thoại",
-    property: "phone",
+    property: "phone_number",
   },
   {
     label: "Ngày tạo",
@@ -355,20 +354,19 @@ export default {
       amount: "",
       date_time: "",
       season_id: "",
-      user_id: "",
+      users: "",
     };
     return {
       formatDate,
       tableColumns,
       tableData: [],
-      multipleSelection: [],
       keyword: "",
       total: 0,
       filter: {
         limit: 10,
         currentPage: 1,
         season_id: null,
-        user_id: null,
+        users: null,
         date_time: null,
         keyword: "",
       },
@@ -383,7 +381,6 @@ export default {
       search: "",
       tableColumnsUser,
       seasons: [],
-      multipleSelection: [],
       filterUser: {
         limit: 10,
         currentPage: 1,
@@ -420,6 +417,7 @@ export default {
         const { data } = await getUsers({
           ...this.filterUser,
           page: this.filterUser.currentPage,
+          search: this.filterUser.keyword
         });
         this.users = data?.data ? data?.data : [];
         this.totalUser = data?.total;
@@ -436,20 +434,21 @@ export default {
         });
         this.seasons = data?.data;
       } catch (error) {
-        this.$message.error("Lỗi lấy danh sách mùa");
+        this.$message.error("Lỗi lấy danh sách mùa giải");
       }
     },
     submit() {
-      if (this.multipleSelection.length === 0) {
+      if (this.form.users.length === 0) {
         this.$message.error("Vui lòng chọn nhân viên");
         return;
       }
       this.$refs["form"].validate(async (valid) => {
         if (valid) {
           try {
+            this.form.users = this.form.users.map((item) => item.id);
             this.form.id
-              ? await updateRanking(this.form)
-              : await createRanking(this.form);
+              ? await updateSale(this.form)
+              : await createSale(this.form);
             this.$message({
               message: this.form.id ? "Cập nhật thành công" : "Tạo thành công",
               type: "success",
@@ -463,16 +462,17 @@ export default {
       });
     },
     openCreateDialog() {
+      // this.selected user reset
+      this.$refs.multipleTable.clearSelection();
       if (this.users.length === 0) this.fetchUsers();
       this.$nextTick(() => {
         this.$refs["form"]?.resetFields();
       });
-      this.form = this.defaultForm;
+      this.form = { ...this.defaultForm };
       const current_season = this.seasons.find(
         (season) => season.is_current_season === true
       );
-      this.form.season_id = current_season?.id;
-      // default this.form.date_time = today
+      this.$set(this.form, "season_id", current_season?.id);
       this.form.date_time = new Date();
       this.dialogFormVisible = true;
     },
@@ -493,7 +493,7 @@ export default {
       }
     },
     handleSelectionChange(val) {
-      this.multipleSelection = val;
+      this.form.users = val;
     },
     async fetchData() {
       this.filter.keyword = this.keyword;
@@ -598,5 +598,12 @@ export default {
 ::v-deep .el-table__body-wrapper {
   height: calc(100vh - 445px) !important;
   overflow-y: auto;
+}
+::v-deep {
+  .table-user {
+    .el-table__row {
+      height: 30px;
+    }
+  }
 }
 </style>

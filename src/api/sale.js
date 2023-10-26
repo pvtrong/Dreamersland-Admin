@@ -14,3 +14,19 @@ export function deleteSale(id) {
     method: 'delete',
   })
 }
+
+export function createSale(data) {
+  return request({
+    url: '/sales',
+    method: 'post',
+    data
+  })
+}
+
+export function updateSale(data) {
+  return request({
+    url: '/sales',
+    method: 'put',
+    data
+  })
+}
