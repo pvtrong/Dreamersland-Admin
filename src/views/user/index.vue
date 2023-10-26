@@ -76,6 +76,14 @@
               circle=""
             ></el-button>
           </el-tooltip>
+          <el-tooltip effect="dark" content="Xoá" placement="top">
+            <el-button
+              icon="el-icon-delete"
+              @click="handleClickEdit(scope)"
+              circle=""
+              type="danger"
+            ></el-button>
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
@@ -90,7 +98,7 @@
 
     <!-- create dialog add user -->
     <el-dialog
-      title="Thêm nhân viên"
+      :title="form.id ? 'Cập nhật nhân viên' : 'Thêm nhân viên'"
       :visible.sync="dialogFormVisible"
       width="30%"
       :before-close="handleClose"
@@ -105,8 +113,11 @@
         <el-form-item label="Email" prop="email">
           <el-input v-model="form.email"></el-input>
         </el-form-item>
-        <el-form-item label="Số điện thoại" prop="phone">
-          <el-input v-model="form.phone"></el-input>
+        <el-form-item label="Số điện thoại" prop="phone_number">
+          <el-input v-model="form.phone_number"></el-input>
+        </el-form-item>
+        <el-form-item label="Mật khẩu" prop="password">
+          <el-input v-model="form.password"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -118,7 +129,7 @@
 </template>
 
 <script>
-import { getUsers, createUser } from "@/api/user";
+import { getUsers, createUser, updateUser } from "@/api/user";
 import { mapGetters } from "vuex";
 
 // utils
@@ -150,8 +161,8 @@ const tableColumns = [
     property: "email",
   },
   {
-    label: "Số điện thoại",
-    property: "phone",
+    label: 'Số điện thoại',
+    property: 'phone_number',
   },
   {
     label: "Ngày tạo",
@@ -176,11 +187,12 @@ export default {
   data() {
     var defaultForm = {
       id: "",
-      firs_name: "",
+      first_name: "",
       last_name: "",
       email: "",
-      phone: "",
-    };
+      phone_number: "",
+      password: "",
+    }
     return {
       formatDate,
       tableColumns,
@@ -232,10 +244,11 @@ export default {
       if (record) {
         this.form = {
           id: record.id,
-          firs_name: record.first_name,
+          first_name: record.first_name,
           last_name: record.last_name,
           email: record.email,
-          phone: record.phone,
+          phone_number: record.phone_number,
+          password: record.password,
         };
       } else this.form = this.defaultForm;
       this.dialogFormVisible = true;
@@ -264,18 +277,12 @@ export default {
       try {
         this.loading = true;
         const { data } = await getUsers({
-          pagination: {
-            limit: this.filter.limit,
-            offset: (this.filter.currentPage - 1) * this.filter.limit,
-          },
-        });
+            ...this.filter,
+            page: this.filter.currentPage,
+        })
         this.tableData =
-          data &&
-          data.airdropCampaigns &&
-          data.airdropCampaigns.airdropCampaigns
-            ? data.airdropCampaigns.airdropCampaigns
-            : [];
-        this.total = data.airdropCampaigns.pagination.totalRecords;
+          data?.data
+        this.total = data?.total
         document
           .getElementsByClassName("el-table__body-wrapper")[0]
           .scrollTo(0, 0);
@@ -293,9 +300,7 @@ export default {
       }
     },
     handleClickEdit(scope) {
-      this.$router.push({
-        path: `user/put/${scope.row.id}`,
-      });
+      this.openCreateDialog(scope.row)
     },
   },
 

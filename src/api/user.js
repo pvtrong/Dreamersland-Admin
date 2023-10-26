@@ -22,16 +22,26 @@ export function logout() {
   })
 }
 
-export function createUser() {
+export function createUser(data) {
   return request({
-    url: '/user',
-    method: 'post'
+    url: '/user/signup',
+    method: 'post',
+    data
   })
 }
 
-export function getUsers() {
+export function getUsers(params) {
   return request({
-    url: '/user',
+    url: '/admin/list_user',
     method: 'get',
+    params
+  })
+}
+
+export function updateUser(data) {
+  return request({
+    url: '/user/update_profile',
+    method: 'post',
+    data
   })
 }
