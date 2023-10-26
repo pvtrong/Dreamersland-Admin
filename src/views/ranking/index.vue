@@ -314,7 +314,7 @@ export default {
           image: null,
         }
       }
-      else this.form = this.defaultForm
+      else this.form = {...this.defaultForm}
       this.dialogFormVisible = true
       
     },

@@ -250,7 +250,7 @@ export default {
           phone_number: record.phone_number,
           password: record.password,
         };
-      } else this.form = this.defaultForm;
+      } else this.form = {...this.defaultForm};
       this.dialogFormVisible = true;
     },
     handleClose(done) {

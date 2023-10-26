@@ -121,7 +121,7 @@ export const rules = {
     message: 'Vui lòng nhập ngày',
   },
   season_id: {
-    type: 'string',
+    type: 'number',
     required: true,
     trigger: ['blur', 'change'],
     message: 'Vui lòng chọn mùa giải',

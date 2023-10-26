@@ -315,7 +315,7 @@ export default {
           end_date: new Date(record.end_date),
         }
       }
-      else this.form = this.defaultForm
+      else this.form = {...this.defaultForm}
       this.dialogFormVisible = true
     },
     handleClose(done) {
