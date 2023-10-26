@@ -187,7 +187,7 @@ export default {
   data() {
     var defaultForm = {
       id: "",
-      firs_name: "",
+      first_name: "",
       last_name: "",
       email: "",
       phone_number: "",
@@ -241,7 +241,7 @@ export default {
       if(record) {
         this.form = {
           id: record.id,
-          firs_name: record.first_name,
+          first_name: record.first_name,
           last_name: record.last_name,
           email: record.email,
           phone_number: record.phone_number,
