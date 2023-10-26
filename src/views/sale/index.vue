@@ -5,11 +5,23 @@
       <div class="sale__panel--name">Doanh số</div>
       <div class="sale__panel--total">{{ total }}</div>
       <div class="sale__panel--filter">
-        <el-input placeholder="Tìm kiếm" v-model="keyword" :clearable="true" @clear="fetchData" style="max-width: 200px;">
+        <el-input
+          placeholder="Tìm kiếm"
+          v-model="keyword"
+          :clearable="true"
+          @clear="fetchData"
+          style="max-width: 200px"
+        >
           <i slot="prefix" class="el-input__icon el-icon-search"></i>
         </el-input>
         <!-- create select season -->
-        <el-select v-model="filter.season_id" placeholder="Chọn mùa giải" style="width: 200px" :clearable="true" @clear="fetchData">
+        <el-select
+          v-model="filter.season_id"
+          placeholder="Chọn mùa giải"
+          style="width: 200px"
+          :clearable="true"
+          @clear="fetchData"
+        >
           <el-option
             v-for="item in seasons"
             :key="item.id"
@@ -26,9 +38,7 @@
           :loading="loading"
         ></el-button>
       </div>
-      <div class="sale__panel--search">
-        
-      </div>
+      <div class="sale__panel--search"></div>
       <!-- <div class="sale__panel--edit">
         <el-button type="default" icon="el-icon-edit">EDIT</el-button>
       </div> -->
@@ -36,11 +46,8 @@
         <el-button type="default" icon="el-icon-delete">DELETE</el-button>
       </div> -->
       <div class="sale__panel--create">
-        <el-button
-          @click="openCreateDialog"
-          type="primary"
-          icon="el-icon-plus"
-          >Thêm doanh số</el-button
+        <el-button @click="openCreateDialog" type="primary" icon="el-icon-plus"
+          >Cập nhật doanh số</el-button
         >
       </div>
     </div>
@@ -48,7 +55,6 @@
       ref="multipleTable"
       :data="tableData"
       style="width: 100%"
-      @selection-change="handleSelectionChange"
       stripe
       class="table-content"
       scrollbar-always-on
@@ -74,7 +80,7 @@
           :width="item.width"
         >
           <template #default="scope"
-            >{{ scope.row.user.first_name + ' ' + scope.row.user.last_name }}
+            >{{ scope.row.user.first_name + " " + scope.row.user.last_name }}
           </template>
         </el-table-column>
         <el-table-column
@@ -85,7 +91,12 @@
           :width="item.width"
         >
           <template #default="scope"
-            >{{ scope.row.amount.toLocaleString('it-IT', {style : 'currency', currency : 'VND'}) }}
+            >{{
+              scope.row.amount.toLocaleString("it-IT", {
+                style: "currency",
+                currency: "VND",
+              })
+            }}
           </template>
         </el-table-column>
         <el-table-column
@@ -100,13 +111,13 @@
       </template>
       <el-table-column label="Hành động" width="120">
         <template slot-scope="scope">
-          <el-tooltip effect="dark" content="Sửa" placement="top">
+          <!-- <el-tooltip effect="dark" content="Sửa" placement="top">
             <el-button
               icon="el-icon-edit"
               @click="handleClickEdit(scope)"
               circle=""
             ></el-button>
-          </el-tooltip>
+          </el-tooltip> -->
           <el-tooltip effect="dark" content="Xoá" placement="top">
             <el-button
               icon="el-icon-delete"
@@ -129,108 +140,223 @@
 
     <!-- create dialog add ranking -->
     <el-dialog
-      title="Thêm doanh số"
+      title="Cập nhật doanh số"
       :visible.sync="dialogFormVisible"
-      width="30%"
+      width="60%"
       :before-close="handleClose"
     >
-      <el-form :model="form" :rules="rules" ref="form" label-width="120px">
-        <el-form-item label="Tên danh hiệu" prop="rank_name">
-          <el-input v-model="form.rank_name"></el-input>
+      <!-- input keyword -->
+      <el-input
+        placeholder="Tìm kiếm"
+        v-model="search"
+        :clearable="true"
+        @clear="fetchUsers"
+        style="max-width: 200px"
+      >
+        <i slot="prefix" class="el-input__icon el-icon-search"></i>
+      </el-input>
+      <!-- button search -->
+      <el-button
+        style="margin-left: 20px"
+        @click="fetchUsers"
+        type="primary"
+        icon="el-icon-search"
+        :loading="loadingUser"
+      ></el-button>
+
+      <el-form :model="form" :rules="rules" ref="form" label-width="120px" label-position="left">
+        <el-table
+          ref="multipleTable"
+          :data="
+            users.filter(
+              (data) =>
+                !search ||
+                data.name.toLowerCase().includes(search.toLowerCase())
+            )
+          "
+          style="width: 100%; height: 50vh"
+          @selection-change="handleSelectionChange"
+          stripe
+          class="table-content"
+          scrollbar-always-on
+          v-loading="loadingUser"
+        >
+          <template v-for="(item, index) in tableColumnsUser">
+            <el-table-column
+              v-if="item.type === TYPE_DATA.DATE"
+              :label="item.label"
+              :type="item.type"
+              :key="index"
+              :width="item.width"
+            >
+              <template #default="scope"
+                >{{ formatDate(scope.row.createdAt) }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              v-else
+              :property="item.property"
+              :label="item.label"
+              :type="item.type"
+              :width="item.width"
+              :key="index"
+            >
+            </el-table-column>
+          </template>
+        </el-table>
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="totalUser"
+          :page-size="filterUser.limit"
+          :current-page.sync="filterUser.currentPage"
+          style="margin: 20px 0;"
+        >
+        </el-pagination>
+        <el-form-item label="Doanh số" prop="amount">
+          <el-input-number
+            v-model="form.amount"
+            controls-position="right"
+          ></el-input-number>
         </el-form-item>
-        <el-form-item label="Ảnh" prop="img_url">
-          <el-input v-model="form.img_url"></el-input>
+        <el-form-item label="Ngày" prop="date_time">
+          <el-date-picker
+            v-model="form.date_time"
+            type="date"
+            placeholder="Chọn ngày"
+          ></el-date-picker>
         </el-form-item>
-        <el-form-item label="Điểm tối thiểu" prop="min_point">
-          <el-input v-model="form.min_point"></el-input>
-        </el-form-item>
-        <el-form-item label="Điểm tối đa" prop="max_point">
-          <el-input v-model="form.max_point"></el-input>
+        <!-- select season -->
+        <el-form-item label="Mùa giải" prop="season_id">
+          <el-select
+            v-model="form.season_id"
+            placeholder="Chọn mùa giải"
+          >
+            <el-option
+              v-for="item in seasons"
+              :key="item.id"
+              :label="item.season_name"
+              :value="item.id"
+            ></el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">Hủy</el-button>
-        <el-button type="primary" @click="submit"
-          >Lưu</el-button
-        >
+        <el-button type="primary" @click="submit">Lưu</el-button>
       </div>
     </el-dialog>
-
   </div>
 </template>
 
 <script>
-import { getSales, deleteSale } from '@/api/sale'
-import { getSeasons } from "@/api/season"
-import { mapGetters } from 'vuex'
+import { getSales, deleteSale } from "@/api/sale";
+import { getSeasons } from "@/api/season";
+import { mapGetters } from "vuex";
 
 // utils
-import { formatDate } from '@/utils/index'
-import { rules } from '@/utils/validate' 
+import { formatDate } from "@/utils/index";
+import { rules } from "@/utils/validate";
 
 // constants
-import { TYPE_DATA } from "@/commons/index.constant"
+import { TYPE_DATA } from "@/commons/index.constant";
+import { getUsers } from "@/api/user";
 
 const tableColumns = [
   // {
   //   type: "selection",
   // },
   {
-    label: 'ID',
-    property: 'id',
-    width: '80',
+    label: "ID",
+    property: "id",
+    width: "80",
   },
   {
-    label: 'Doanh số',
-    property: 'amount',
+    label: "Doanh số",
+    property: "amount",
   },
   {
-    label: 'Số điểm nhận được',
-    property: 'point',
+    label: "Số điểm nhận được",
+    property: "point",
   },
   {
-    label: 'Ngày',
-    property: 'date_time',
+    label: "Ngày",
+    property: "date_time",
     type: TYPE_DATA.DATE,
   },
   {
-    label: 'Họ tên nhân viên',
+    label: "Họ tên nhân viên",
   },
   {
-    label: 'Số điện thoại',
-    property: 'user.phone_number',
+    label: "Số điện thoại",
+    property: "user.phone_number",
   },
   {
-    label: 'Mùa giải',
-    property: 'season.season_name',
+    label: "Mùa giải",
+    property: "season.season_name",
   },
-  ]
+];
+
+const tableColumnsUser = [
+  {
+    type: "selection",
+  },
+  {
+    label: "ID",
+    property: "id",
+    width: "80",
+  },
+  {
+    label: "Tên nhân viên",
+    property: "first_name",
+  },
+  {
+    label: "Họ nhân viên",
+    property: "last_name",
+  },
+  {
+    label: "Email",
+    property: "email",
+  },
+  {
+    label: "Số điện thoại",
+    property: "phone",
+  },
+  {
+    label: "Ngày tạo",
+    property: "createdAt",
+    type: TYPE_DATA.DATE,
+  },
+];
 
 export default {
-  name: 'Sales',
+  name: "Sales",
   computed: {
-    ...mapGetters(['name']),
+    ...mapGetters(["name"]),
   },
   async created() {
-    await Promise.all([this.fetchUsers(), this.fetchSeasons()])
+    await Promise.all([this.fetchSeasons()]);
     this.filter = {
       ...this.filter,
       ...this.$route.query,
-    }
-    this.filter.currentPage = Number(this.filter.currentPage)
-    this.filter.limit = Number(this.filter.limit)
-    const current_season = this.seasons.find(season => season.is_current_season === true)
-    this.filter.season_id = this.filter.season_id ? Number(this.filter.season_id) : current_season.id;
-    
+    };
+    this.filter.currentPage = Number(this.filter.currentPage);
+    this.filter.limit = Number(this.filter.limit);
+    const current_season = this.seasons.find(
+      (season) => season.is_current_season === true
+    );
+    this.filter.season_id = this.filter.season_id
+      ? Number(this.filter.season_id)
+      : current_season.id;
   },
   data() {
     var defaultForm = {
       id: "",
-      rank_name: "",
-      img_url: "",
-      min_point: "",
-      max_point: "",
-    }
+      amount: "",
+      date_time: "",
+      season_id: "",
+      user_id: "",
+    };
     return {
       formatDate,
       tableColumns,
@@ -252,37 +378,54 @@ export default {
       // create dialog
       dialogFormVisible: false,
       form: defaultForm,
-      rules
-    }
+      rules,
+      users: [],
+      search: "",
+      tableColumnsUser,
+      seasons: [],
+      multipleSelection: [],
+      filterUser: {
+        limit: 10,
+        currentPage: 1,
+        keyword: "",
+      },
+      totalUser: 0,
+      loadingUser: false,
+      defaultForm,
+    };
   },
 
   methods: {
     async handleClickDelete(scope) {
       // alert delete
-      this.$confirm('Bạn có chắc chắn muốn xoá?')
+      this.$confirm("Bạn có chắc chắn muốn xoá?")
         .then(async () => {
           try {
-            await deleteSale(scope.row.id)
+            await deleteSale(scope.row.id);
             this.$message({
-              message: 'Xoá thành công',
-              type: 'success',
-            })
-            this.fetchData()
+              message: "Xoá thành công",
+              type: "success",
+            });
+            this.fetchData();
           } catch (error) {
-            this.$message.error('Xoá thất bại')
+            this.$message.error("Xoá thất bại");
           }
         })
-        .catch(() => {})
+        .catch(() => {});
     },
     async fetchUsers() {
+      this.filterUser.keyword = this.search;
       try {
+        this.loadingUser = true;
         const { data } = await getUsers({
-          limit: 10000,
-          page: 1,
-        })
-        this.users = data.data
+          ...this.filterUser,
+          page: this.filterUser.currentPage,
+        });
+        this.users = data?.data ? data?.data : [];
+        this.totalUser = data?.total;
       } catch (error) {
-        this.$message.error('Lỗi lấy danh sách nhân viên')
+      } finally {
+        this.loadingUser = false;
       }
     },
     async fetchSeasons() {
@@ -290,106 +433,112 @@ export default {
         const { data } = await getSeasons({
           limit: 10000,
           page: 1,
-        })
-        this.seasons = data?.data
+        });
+        this.seasons = data?.data;
       } catch (error) {
-        this.$message.error('Lỗi lấy danh sách mùa')
+        this.$message.error("Lỗi lấy danh sách mùa");
       }
     },
     submit() {
-      this.$refs['form'].validate(async (valid) => {
+      if (this.multipleSelection.length === 0) {
+        this.$message.error("Vui lòng chọn nhân viên");
+        return;
+      }
+      this.$refs["form"].validate(async (valid) => {
         if (valid) {
           try {
-            this.form.id ? await updateRanking(this.form) : await createRanking(this.form)
+            this.form.id
+              ? await updateRanking(this.form)
+              : await createRanking(this.form);
             this.$message({
-              message: this.form.id ? 'Cập nhật thành công' : 'Tạo thành công' ,
-              type: 'success',
-            })
-            this.dialogFormVisible = false
-            this.fetchData()
-          } catch (error) {
-          }
+              message: this.form.id ? "Cập nhật thành công" : "Tạo thành công",
+              type: "success",
+            });
+            this.dialogFormVisible = false;
+            this.fetchData();
+          } catch (error) {}
         } else {
-          return false
+          return false;
         }
-      })
+      });
     },
-    openCreateDialog(record) {
+    openCreateDialog() {
+      if (this.users.length === 0) this.fetchUsers();
       this.$nextTick(() => {
-        this.$refs['form']?.resetFields()
-      })
-      if(record) {
-        this.form = {
-          id: record.id,
-          rank_name: record.rank_name,
-          img_url: record.img_url,
-          min_point: record.min_point,
-          max_point: record.max_point,
-        }
-      }
-      else this.form = defaultForm
-      this.dialogFormVisible = true
+        this.$refs["form"]?.resetFields();
+      });
+      this.form = this.defaultForm;
+      const current_season = this.seasons.find(
+        (season) => season.is_current_season === true
+      );
+      this.form.season_id = current_season?.id;
+      // default this.form.date_time = today
+      this.form.date_time = new Date();
+      this.dialogFormVisible = true;
     },
     handleClose(done) {
-      this.$confirm('Bạn có chắc chắn muốn thoát?')
-        .then(_ => {
+      this.$confirm("Bạn có chắc chắn muốn thoát?")
+        .then((_) => {
           done();
         })
-        .catch(_ => {});
+        .catch((_) => {});
     },
     toggleSelection(rows) {
       if (rows) {
         rows.forEach((row) => {
-          this.$refs.multipleTable.toggleRowSelection(row)
-        })
+          this.$refs.multipleTable.toggleRowSelection(row);
+        });
       } else {
-        this.$refs.multipleTable.clearSelection()
+        this.$refs.multipleTable.clearSelection();
       }
     },
     handleSelectionChange(val) {
-      this.multipleSelection = val
+      this.multipleSelection = val;
     },
     async fetchData() {
-      this.filter.keyword = this.keyword
+      this.filter.keyword = this.keyword;
       try {
-        this.loading = true
+        this.loading = true;
         const { data } = await getSales({
-            ...this.filter,
-            page: this.filter.currentPage
-        })
-        this.tableData = data?.data
-        this.total = data?.total
+          ...this.filter,
+          page: this.filter.currentPage,
+        });
+        this.tableData = data?.data;
+        this.total = data?.total;
 
         document
-          .getElementsByClassName('el-table__body-wrapper')[0]
-          .scrollTo(0, 0)
+          .getElementsByClassName("el-table__body-wrapper")[0]
+          .scrollTo(0, 0);
         if (!this.isFirstGetData)
           this.$router.push({
             path: this.$route.path,
             query: {
               ...this.filter,
             },
-          })
-        else this.isFirstGetData = false
+          });
+        else this.isFirstGetData = false;
       } catch (error) {
       } finally {
-        this.loading = false
+        this.loading = false;
       }
-    },
-    handleClickEdit(scope) {
-      this.openCreateDialog(scope.row)
     },
   },
 
   watch: {
     filter: {
       handler: function () {
-        this.fetchData()
+        this.fetchData();
+      },
+      deep: true,
+    },
+    filterUser: {
+      handler: function () {
+        this.fetchUsers();
       },
       deep: true,
     },
   },
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -402,7 +551,7 @@ export default {
     align-items: center;
     gap: 20px;
     &--name {
-      font-family: 'Exo';
+      font-family: "Exo";
       font-style: normal;
       font-weight: 600;
       font-size: 15px;
@@ -413,7 +562,7 @@ export default {
       text-transform: uppercase;
     }
     &--total {
-      font-family: 'Exo';
+      font-family: "Exo";
       font-style: normal;
       font-weight: 600;
       font-size: 13px;

@@ -138,7 +138,7 @@
       width="30%"
       :before-close="handleClose"
     >
-      <el-form :model="form" :rules="rules" ref="form" label-width="140px">
+      <el-form :model="form" :rules="rules" ref="form" label-width="140px" label-position="left">
         <el-form-item label="Tên mùa giải giải" prop="season_name">
           <el-input v-model="form.season_name" placeholder="Nhập tên mùa"></el-input>
         </el-form-item>
@@ -264,7 +264,8 @@ export default {
       // create dialog
       dialogFormVisible: false,
       form: defaultForm,
-      rules
+      rules,
+      defaultForm
     }
   },
 
@@ -314,7 +315,7 @@ export default {
           end_date: new Date(record.end_date),
         }
       }
-      else this.form = defaultForm
+      else this.form = this.defaultForm
       this.dialogFormVisible = true
     },
     handleClose(done) {
