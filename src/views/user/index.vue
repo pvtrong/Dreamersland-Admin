@@ -69,7 +69,7 @@
       </template>
       <el-table-column label="Hành động" width="120">
         <template slot-scope="scope">
-          <el-tooltip effect="dark" content="Edit" placement="top">
+          <el-tooltip effect="dark" content="Sửa" placement="top">
             <el-button
               icon="el-icon-edit"
               @click="handleClickEdit(scope)"
@@ -79,7 +79,7 @@
           <el-tooltip effect="dark" content="Xoá" placement="top">
             <el-button
               icon="el-icon-delete"
-              @click="handleClickEdit(scope)"
+              @click="handleClickDelete(scope)"
               circle=""
               type="danger"
             ></el-button>
@@ -116,7 +116,7 @@
         <el-form-item label="Số điện thoại" prop="phone_number">
           <el-input v-model="form.phone_number"></el-input>
         </el-form-item>
-        <el-form-item label="Mật khẩu" prop="password">
+        <el-form-item v-if="!this.form.id" label="Mật khẩu" prop="password">
           <el-input v-model="form.password"></el-input>
         </el-form-item>
       </el-form>
@@ -129,7 +129,7 @@
 </template>
 
 <script>
-import { getUsers, createUser, updateUser } from "@/api/user";
+import { getUsers, createUser, updateUser, deleteUser } from "@/api/user";
 import { mapGetters } from "vuex";
 
 // utils
@@ -218,6 +218,20 @@ export default {
   },
 
   methods: {
+    async handleClickDelete(scope) {
+      this.$confirm("Bạn có chắc chắn muốn xoá?")
+        .then(async (_) => {
+          try {
+            await deleteUser(scope.row.phone_number);
+            this.$message({
+              message: "Xoá thành công",
+              type: "success",
+            });
+            this.fetchData();
+          } catch (error) {}
+        })
+        .catch((_) => {});
+    },
     submit() {
       this.$refs["form"].validate(async (valid) => {
         if (valid) {
@@ -279,6 +293,7 @@ export default {
         const { data } = await getUsers({
             ...this.filter,
             page: this.filter.currentPage,
+            search: this.filter.keyword,
         })
         this.tableData =
           data?.data

@@ -40,8 +40,15 @@ export function getUsers(params) {
 
 export function updateUser(data) {
   return request({
-    url: '/user/update_profile',
+    url: '/admin/update_profile/' + data.id,
     method: 'post',
     data
+  })
+}
+
+export function deleteUser(phone_number) {
+  return request({
+    url: '/user/' + phone_number,
+    method: 'delete'
   })
 }
