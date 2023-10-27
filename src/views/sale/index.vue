@@ -486,10 +486,12 @@ export default {
       this.$refs["form"].validate(async (valid) => {
         if (valid) {
           try {
-            this.form.users = this.modeForm === MODE_FORM.CREATE ? this.form.users?.map((item) => item.id) : []
+            this.form.date_time = this.form.date_time.toISOString().split("T")[0];
             this.modeForm === MODE_FORM.EDIT
               ? await updateSale({ids: this.salesIds, amount: this.form.amount})
               : await createSale(this.form);
+            // form this.form.date_time to "yyyy-MM-dd"
+
             this.$message({
               message: this.modeForm === MODE_FORM.EDIT ? "Cập nhật thành công" : "Thêm thành công",
               type: "success",
@@ -538,7 +540,7 @@ export default {
       }
     },
     handleSelectionChange(val) {
-      this.form.users = val;
+      this.form.users = val ? val.map((item) => item.id) : [];
     },
     async fetchData() {
       this.filter.keyword = this.keyword;
