@@ -29,14 +29,37 @@
             :value="item.id"
           ></el-option>
         </el-select>
+        <!-- filter date_time -->
+        <el-date-picker
+          v-model="filter.date_time"
+          type="date"
+          placeholder="Chọn ngày"
+          style="width: 200px"
+          :clearable="true"
+          @clear="fetchData"
+        ></el-date-picker>
       </div>
       <div class="course__panel--edit">
-        <el-button
-          @click="fetchData"
-          type="primary"
-          icon="el-icon-search"
-          :loading="loading"
-        ></el-button>
+        <el-tooltip effect="dark" content="Tìm kiếm" placement="top">
+          <el-button
+            @click="fetchData"
+            type="primary"
+            icon="el-icon-search"
+            :loading="loading"
+          ></el-button>
+        </el-tooltip>
+        <el-tooltip
+          v-show="salesIds.length > 0"
+          effect="dark"
+          content="Sửa bản ghi đã chọn"
+          placement="top"
+        >
+          <el-button
+            @click="handleClickEdit"
+            icon="el-icon-edit"
+            :loading="loading"
+          ></el-button>
+        </el-tooltip>
       </div>
       <div class="sale__panel--search"></div>
       <!-- <div class="sale__panel--edit">
@@ -46,19 +69,23 @@
         <el-button type="default" icon="el-icon-delete">DELETE</el-button>
       </div> -->
       <div class="sale__panel--create">
-        <el-button @click="openCreateDialog" type="primary" icon="el-icon-plus"
-          >Cập nhật doanh số</el-button
+        <el-button
+          @click="openCreateDialog(false)"
+          type="primary"
+          icon="el-icon-plus"
+          >Thêm doanh số</el-button
         >
       </div>
     </div>
     <el-table
-      ref="multipleTable"
+      ref="multipleTableSales"
       :data="tableData"
       style="width: 100%"
       stripe
       class="table-content"
       scrollbar-always-on
       v-loading="loading"
+      @selection-change="handleSelectionSalesChange"
     >
       <template v-for="(item, index) in tableColumns">
         <el-table-column
@@ -140,74 +167,74 @@
 
     <!-- create dialog add ranking -->
     <el-dialog
-      title="Cập nhật doanh số"
+      :title="modeForm === MODE_FORM.CREATE ? 'Thêm doanh số' : 'Sửa doanh số'"
       :visible.sync="dialogFormVisible"
-      width="60%"
+      :width="modeForm === MODE_FORM.CREATE ? '60%' : '30%'"
       :before-close="handleClose"
     >
       <!-- input keyword -->
-      <el-input
-        placeholder="Tìm kiếm"
-        v-model="search"
-        :clearable="true"
-        @clear="fetchUsers"
-        style="max-width: 200px"
-      >
-        <i slot="prefix" class="el-input__icon el-icon-search"></i>
-      </el-input>
-      <!-- button search -->
-      <el-button
-        style="margin-left: 20px"
-        @click="fetchUsers"
-        type="primary"
-        icon="el-icon-search"
-        :loading="loadingUser"
-      ></el-button>
+      <template v-if="modeForm === MODE_FORM.CREATE">
+        <el-input
+          placeholder="Tìm kiếm"
+          v-model="search"
+          :clearable="true"
+          @clear="fetchUsers"
+          style="max-width: 200px"
+        >
+          <i slot="prefix" class="el-input__icon el-icon-search"></i>
+        </el-input>
+        <!-- button search -->
+        <el-button
+          style="margin-left: 20px"
+          @click="fetchUsers"
+          type="primary"
+          icon="el-icon-search"
+          :loading="loadingUser"
+        ></el-button>
 
-      <el-table
-        ref="multipleTable"
-        :data="
-          users
-        "
-        style="width: 100%; height: 50vh"
-        @selection-change="handleSelectionChange"
-        stripe
-        class="table-user"
-        scrollbar-always-on
-        v-loading="loadingUser"
-      >
-        <template v-for="(item, index) in tableColumnsUser">
-          <el-table-column
-            v-if="item.type === TYPE_DATA.DATE"
-            :label="item.label"
-            :type="item.type"
-            :key="index"
-            :width="item.width"
-          >
-            <template #default="scope"
-              >{{ formatDate(scope.row.createdAt) }}
-            </template>
-          </el-table-column>
-          <el-table-column
-            v-else
-            :property="item.property"
-            :label="item.label"
-            :type="item.type"
-            :width="item.width"
-            :key="index"
-          >
-          </el-table-column>
-        </template>
-      </el-table>
-      <el-pagination
-        background
-        layout="prev, pager, next"
-        :total="totalUser"
-        :page-size="filterUser.limit"
-        :current-page.sync="filterUser.currentPage"
-        style="margin: 20px 0"
-      >
-      </el-pagination>
+        <el-table
+          ref="multipleTable"
+          :data="users"
+          style="width: 100%; height: 50vh"
+          @selection-change="handleSelectionChange"
+          stripe
+          class="table-user"
+          scrollbar-always-on
+          v-loading="loadingUser"
+        >
+          <template v-for="(item, index) in tableColumnsUser">
+            <el-table-column
+              v-if="item.type === TYPE_DATA.DATE"
+              :label="item.label"
+              :type="item.type"
+              :key="index"
+              :width="item.width"
+            >
+              <template #default="scope"
+                >{{ formatDate(scope.row.createdAt) }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              v-else
+              :property="item.property"
+              :label="item.label"
+              :type="item.type"
+              :width="item.width"
+              :key="index"
+            >
+            </el-table-column>
+          </template>
+        </el-table>
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="totalUser"
+          :page-size="filterUser.limit"
+          :current-page.sync="filterUser.currentPage"
+          style="margin: 20px 0"
+        >
+        </el-pagination>
+      </template>
       <el-form
         :model="form"
         :rules="rules"
@@ -221,7 +248,7 @@
             controls-position="right"
           ></el-input-number>
         </el-form-item>
-        <el-form-item label="Ngày" prop="date_time">
+        <el-form-item v-if="modeForm === MODE_FORM.CREATE" label="Ngày" prop="date_time">
           <el-date-picker
             v-model="form.date_time"
             type="date"
@@ -229,7 +256,7 @@
           ></el-date-picker>
         </el-form-item>
         <!-- select season -->
-        <el-form-item label="Mùa giải" prop="season_id">
+        <el-form-item v-if="modeForm === MODE_FORM.CREATE" label="Mùa giải" prop="season_id">
           <el-select v-model="form.season_id" placeholder="Chọn mùa giải">
             <el-option
               v-for="item in seasons"
@@ -262,9 +289,9 @@ import { TYPE_DATA } from "@/commons/index.constant";
 import { getUsers } from "@/api/user";
 
 const tableColumns = [
-  // {
-  //   type: "selection",
-  // },
+  {
+    type: "selection",
+  },
   {
     label: "ID",
     property: "id",
@@ -328,6 +355,11 @@ const tableColumnsUser = [
   },
 ];
 
+const MODE_FORM = {
+  CREATE: "create",
+  EDIT: "edit",
+};
+
 export default {
   name: "Sales",
   computed: {
@@ -389,10 +421,19 @@ export default {
       totalUser: 0,
       loadingUser: false,
       defaultForm,
+      salesIds: [],
+      modeForm: MODE_FORM.CREATE,
+      MODE_FORM,
     };
   },
 
   methods: {
+    async handleClickEdit() {
+      this.openCreateDialog(true);
+    },
+    handleSelectionSalesChange(val) {
+      this.salesIds = val.map((item) => item.id);
+    },
     async handleClickDelete(scope) {
       // alert delete
       this.$confirm("Bạn có chắc chắn muốn xoá?")
@@ -417,7 +458,7 @@ export default {
         const { data } = await getUsers({
           ...this.filterUser,
           page: this.filterUser.currentPage,
-          search: this.filterUser.keyword
+          search: this.filterUser.keyword,
         });
         this.users = data?.data ? data?.data : [];
         this.totalUser = data?.total;
@@ -438,35 +479,39 @@ export default {
       }
     },
     submit() {
-      if (this.form.users.length === 0) {
+      if (this.modeForm === MODE_FORM.CREATE && this.form.users.length === 0) {
         this.$message.error("Vui lòng chọn nhân viên");
         return;
       }
       this.$refs["form"].validate(async (valid) => {
         if (valid) {
           try {
-            this.form.users = this.form.users.map((item) => item.id);
-            this.form.id
-              ? await updateSale(this.form)
+            this.form.users = this.modeForm === MODE_FORM.CREATE ? this.form.users?.map((item) => item.id) : []
+            this.modeForm === MODE_FORM.EDIT
+              ? await updateSale({ids: this.salesIds, amount: this.form.amount})
               : await createSale(this.form);
             this.$message({
-              message: this.form.id ? "Cập nhật thành công" : "Tạo thành công",
+              message: this.modeForm === MODE_FORM.EDIT ? "Cập nhật thành công" : "Thêm thành công",
               type: "success",
             });
             this.dialogFormVisible = false;
             this.fetchData();
-          } catch (error) {}
+          } catch (error) {
+            console.log(error);
+          }
         } else {
           return false;
         }
       });
     },
-    openCreateDialog() {
+    openCreateDialog(isEdit = false) {
+      this.modeForm = isEdit ? MODE_FORM.EDIT : MODE_FORM.CREATE;
       // this.selected user reset
-      this.$refs.multipleTable.clearSelection();
+      
       if (this.users.length === 0) this.fetchUsers();
       this.$nextTick(() => {
         this.$refs["form"]?.resetFields();
+        this.$refs.multipleTable.clearSelection();
       });
       this.form = { ...this.defaultForm };
       const current_season = this.seasons.find(
