@@ -128,3 +128,11 @@ export function formatDate(date, symbol = '/') {
 
   return [day, month, year].join(symbol)
 }
+
+export function dateToString(date) {
+  let d = new Date(date);
+  let day = d.getDate();
+  let month = d.getMonth() + 1;
+  let year = d.getFullYear();
+  return `${year}/${month}/${day}`;
+}

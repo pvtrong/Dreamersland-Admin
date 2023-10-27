@@ -287,6 +287,7 @@ import { rules } from "@/utils/validate";
 // constants
 import { TYPE_DATA } from "@/commons/index.constant";
 import { getUsers } from "@/api/user";
+import { dateToString } from "@/utils/index";
 
 const tableColumns = [
   {
@@ -479,6 +480,7 @@ export default {
       }
     },
     submit() {
+      let me = this;
       if (this.modeForm === MODE_FORM.CREATE && this.form.users.length === 0) {
         this.$message.error("Vui lòng chọn nhân viên");
         return;
@@ -486,18 +488,17 @@ export default {
       this.$refs["form"].validate(async (valid) => {
         if (valid) {
           try {
-            this.form.date_time = this.form.date_time.toISOString().split("T")[0];
-            this.modeForm === MODE_FORM.EDIT
-              ? await updateSale({ids: this.salesIds, amount: this.form.amount})
-              : await createSale(this.form);
-            // form this.form.date_time to "yyyy-MM-dd"
+            me.modeForm === MODE_FORM.EDIT
+              ? await updateSale({ids: me.salesIds, amount: me.form.amount, date_time: dateToString(me.form.date_time)})
+              : await createSale({...me.form, date_time: dateToString(me.form.date_time)});
+            // form me.form.date_time to "yyyy-MM-dd"
 
-            this.$message({
-              message: this.modeForm === MODE_FORM.EDIT ? "Cập nhật thành công" : "Thêm thành công",
+            me.$message({
+              message: me.modeForm === MODE_FORM.EDIT ? "Cập nhật thành công" : "Thêm thành công",
               type: "success",
             });
-            this.dialogFormVisible = false;
-            this.fetchData();
+            me.dialogFormVisible = false;
+            me.fetchData();
           } catch (error) {
             console.log(error);
           }
