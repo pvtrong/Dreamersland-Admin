@@ -73,6 +73,21 @@
           </template>
         </el-table-column>
         <el-table-column
+          v-else-if="item.property === 'target_day'"
+          :label="item.label"
+          :type="item.type"
+          :key="index"
+          :width="item.width"
+        >
+          <template #default="scope"
+            >
+            {{ scope.row.target_day.toLocaleString("it-IT", {
+                style: "currency",
+                currency: "VND",
+              }) }}
+          </template>
+        </el-table-column>
+        <el-table-column
           v-else
           :property="item.property"
           :label="item.label"
