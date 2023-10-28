@@ -89,7 +89,7 @@
           <template #default="scope"
             >
             <el-tag v-if="scope.row.is_current_season" type="success">Đang diễn ra</el-tag>
-            <el-tag v-else type="info">{{ new Date(scope.row.end_date).getDate() > new Date().getDate() ? 'Đã qua' : 'Chưa diễn ra'  }}</el-tag>
+            <el-tag v-else type="info">{{ new Date(scope.row.end_date) < new Date() ? 'Đã qua' : 'Chưa diễn ra'  }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
@@ -152,7 +152,7 @@
                 return time < Date.now();
               },
             }"
-            :disabled="new Date(form.start_date).getDate() < new Date().getDate() && form.id.length > 0"
+            :disabled="new Date(form.start_date) < new Date() && form.id.length > 0"
           ></el-date-picker>
         </el-form-item>
         <el-form-item label="Ngày kết thúc" prop="end_date">
@@ -165,7 +165,7 @@
                 return time < Date.now() || time <= new Date(form.start_date);
               },
             }"
-            :disabled="(new Date(form.end_date).getDate() < new Date(form.start_date).getDate() || new Date(form.end_date).getDate() < new Date().getDate()) && form.id.length > 0"
+            :disabled="(new Date(form.end_date) < new Date(form.start_date) || new Date(form.end_date) < new Date()) && form.id.length > 0"
           ></el-date-picker>
         </el-form-item>
       </el-form>
@@ -185,7 +185,7 @@ import { getSeasons, createSeason, deleteSeason, updateSeason } from '@/api/seas
 import { mapGetters } from 'vuex'
 
 // utils
-import { formatDate } from '@/utils/index'
+import { dateToString, formatDate } from '@/utils/index'
 import { rules } from '@/utils/validate' 
 
 // constants
@@ -289,7 +289,8 @@ export default {
       this.$refs['form'].validate(async (valid) => {
         if (valid) {
           try {
-            this.form.id ? await updateSeason(this.form) : await createSeason(this.form)
+            
+            this.form.id ? await updateSeason({...this.form, start_date: dateToString(this.form.start_date), end_date: dateToString(this.form.end_date)}) : await createSeason({...this.form, start_date: dateToString(this.form.start_date), end_date: dateToString(this.form.end_date)})
             this.$message({
               message: this.form.id ? 'Cập nhật thành công' : 'Tạo thành công' ,
               type: 'success',

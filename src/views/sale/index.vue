@@ -248,7 +248,7 @@
             controls-position="right"
           ></el-input-number>
         </el-form-item>
-        <el-form-item v-if="modeForm === MODE_FORM.CREATE" label="Ngày" prop="date_time">
+        <el-form-item label="Ngày" prop="date_time">
           <el-date-picker
             v-model="form.date_time"
             type="date"
@@ -377,9 +377,9 @@ export default {
     const current_season = this.seasons.find(
       (season) => season.is_current_season === true
     );
-    this.filter.season_id = this.filter.season_id
-      ? Number(this.filter.season_id)
-      : current_season.id;
+    this.filter.season_id = this.filter?.season_id
+      ? Number(this.filter?.season_id)
+      : current_season?.id;
   },
   data() {
     var defaultForm = {
