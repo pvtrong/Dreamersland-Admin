@@ -58,6 +58,31 @@
           </template>
         </el-table-column>
         <el-table-column
+          v-else-if="item.label === 'Họ tên nhân viên'"
+          :label="item.label"
+          :type="item.type"
+          :key="index"
+          :width="item.width"
+        >
+          <template #default="scope"
+            >{{ scope.row.first_name + ' ' + scope.row.last_name }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-else-if="item.property === 'all_season_sales'"
+          :label="item.label"
+          :type="item.type"
+          :key="index"
+          :width="item.width"
+        >
+          <template #default="scope"
+            >{{ scope.row.all_season_sales.toLocaleString("it-IT", {
+                style: "currency",
+                currency: "VND",
+              }) }}
+          </template>
+        </el-table-column>
+        <el-table-column
           v-else
           :property="item.property"
           :label="item.label"
@@ -149,12 +174,7 @@ const tableColumns = [
     width: "80",
   },
   {
-    label: "Tên nhân viên",
-    property: "first_name",
-  },
-  {
-    label: "Họ nhân viên",
-    property: "last_name",
+    label: "Họ tên nhân viên",
   },
   {
     label: "Email",
@@ -165,10 +185,19 @@ const tableColumns = [
     property: 'phone_number',
   },
   {
+    label: 'Điểm mùa này',
+    property: 'current_season_point',
+  },
+  {
+    label: 'Doanh thu',
+    property: 'all_season_sales',
+  },
+  {
     label: "Ngày tạo",
     property: "createdAt",
     type: TYPE_DATA.DATE,
   },
+
 ];
 
 export default {

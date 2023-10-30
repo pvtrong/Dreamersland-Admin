@@ -77,6 +77,16 @@ service.interceptors.response.use(
       type: 'error',
       duration: 5 * 1000
     })
+
+    // href redirect to login
+    if (error?.response?.data?.message === "Bạn đang không đăng nhập") {
+      // reset token
+      store.dispatch('user/resetToken').then(() => {
+        location.reload()
+        window.location.href = '/login';
+        window.location.reload();
+      })
+    }
     return Promise.reject(error)
   }
 )
