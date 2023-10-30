@@ -117,6 +117,7 @@
               @click="handleClickDelete(scope)"
               circle=""
               type="danger"
+              :disabled="scope.row.is_current_season || new Date(scope.row.end_date) < new Date()"
             ></el-button>
           </el-tooltip>
         </template>
