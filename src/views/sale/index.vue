@@ -248,13 +248,13 @@
             controls-position="right"
           ></el-input-number>
         </el-form-item>
-        <el-form-item label="Ngày" prop="date_time">
+        <!-- <el-form-item label="Ngày" prop="date_time">
           <el-date-picker
             v-model="form.date_time"
             type="date"
             placeholder="Chọn ngày"
           ></el-date-picker>
-        </el-form-item>
+        </el-form-item> -->
         <!-- select season -->
         <el-form-item v-if="modeForm === MODE_FORM.CREATE" label="Mùa giải" prop="season_id">
           <el-select v-model="form.season_id" placeholder="Chọn mùa giải">
@@ -490,8 +490,9 @@ export default {
         if (valid) {
           try {
             this.loadingSubmit = true;
+            // ? await updateSale({ids: me.salesIds, amount: me.form.amount, date_time: dateToString(me.form.date_time)})
             me.modeForm === MODE_FORM.EDIT
-              ? await updateSale({ids: me.salesIds, amount: me.form.amount, date_time: dateToString(me.form.date_time)})
+              ? await updateSale({ids: me.salesIds, amount: me.form.amount})
               : await createSale({...me.form, date_time: dateToString(me.form.date_time)});
             // form me.form.date_time to "yyyy-MM-dd"
 
