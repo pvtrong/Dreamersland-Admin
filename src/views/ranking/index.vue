@@ -162,7 +162,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">Hủy</el-button>
-        <el-button type="primary" @click="submit"
+        <el-button type="primary" @click="submit" :loading="loadingSubmit"
           >Lưu</el-button
         >
       </div>
@@ -255,7 +255,8 @@ export default {
       dialogFormVisible: false,
       form: defaultForm,
       rules,
-      defaultForm
+      defaultForm,
+      loadingSubmit: false,
     }
   },
 
@@ -283,6 +284,7 @@ export default {
       this.$refs['form'].validate(async (valid) => {
         if (valid) {
           try {
+            this.loadingSubmit = true
             // create new form data
             const formData = new FormData()
 
@@ -310,6 +312,9 @@ export default {
           } catch (error) {
             // this.form.id ? this.$message.error('Cập nhật thất bại') : this.$message.error('Tạo thất bại')
           }
+          finally {
+            this.loadingSubmit = false
+          }
         } else {
           return false
         }
@@ -331,7 +336,6 @@ export default {
       }
       else this.form = {...this.defaultForm}
       this.dialogFormVisible = true
-      
     },
     handleClose(done) {
       this.$confirm('Bạn có chắc chắn muốn thoát?')

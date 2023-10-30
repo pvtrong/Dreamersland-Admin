@@ -172,7 +172,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">Hủy</el-button>
-        <el-button type="primary" @click="submit"
+        <el-button type="primary" @click="submit" :loading="loadingSubmit"
           >Lưu</el-button
         >
       </div>
@@ -266,7 +266,8 @@ export default {
       dialogFormVisible: false,
       form: defaultForm,
       rules,
-      defaultForm
+      defaultForm,
+      loadingSubmit: false
     }
   },
 
@@ -290,7 +291,7 @@ export default {
       this.$refs['form'].validate(async (valid) => {
         if (valid) {
           try {
-            
+            this.loadingSubmit = true
             this.form.id ? await updateSeason({...this.form, start_date: dateToString(this.form.start_date), end_date: dateToString(this.form.end_date)}) : await createSeason({...this.form, start_date: dateToString(this.form.start_date), end_date: dateToString(this.form.end_date)})
             this.$message({
               message: this.form.id ? 'Cập nhật thành công' : 'Tạo thành công' ,
@@ -299,6 +300,9 @@ export default {
             this.dialogFormVisible = false
             this.fetchData()
           } catch (error) {
+          }
+          finally {
+            this.loadingSubmit = false
           }
         } else {
           return false

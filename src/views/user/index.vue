@@ -147,7 +147,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">Hủy</el-button>
-        <el-button type="primary" @click="submit">Lưu</el-button>
+        <el-button type="primary" @click="submit" :loading="loadingSubmit">Lưu</el-button>
       </div>
     </el-dialog>
   </div>
@@ -242,7 +242,8 @@ export default {
       dialogFormVisible: false,
       form: defaultForm,
       rules,
-      defaultForm
+      defaultForm,
+      loadingSubmit: false
     };
   },
 
@@ -265,6 +266,7 @@ export default {
       this.$refs["form"].validate(async (valid) => {
         if (valid) {
           try {
+            this.loadingSubmit = true;
             this.form.id
               ? await updateUser(this.form)
               : await createUser(this.form);
@@ -275,6 +277,9 @@ export default {
             this.dialogFormVisible = false;
             this.fetchData();
           } catch (error) {}
+          finally {
+            this.loadingSubmit = false;
+          }
         } else {
           return false;
         }
