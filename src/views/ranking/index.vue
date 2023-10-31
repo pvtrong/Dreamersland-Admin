@@ -150,7 +150,7 @@
             :list-type="'picture'"
             :on-change="handleChange"
           >
-            <el-button slot="trigger" size="small" type="primary">select file</el-button>
+            <el-button slot="trigger" size="small" type="primary">Chọn ảnh</el-button>
           </el-upload>
         </el-form-item>
         <el-form-item label="Mục tiêu ngày" prop="target_day">
@@ -322,7 +322,7 @@ export default {
     },
     openCreateDialog(record) {
       this.$nextTick(() => {
-        this.$refs['form'].resetFields()
+        this.$refs['form']?.resetFields()
       })
       if(record) {
         this.form = {
