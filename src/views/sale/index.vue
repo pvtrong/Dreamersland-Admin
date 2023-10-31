@@ -248,14 +248,6 @@
             controls-position="right"
           ></el-input-number>
         </el-form-item>
-        <el-form-item label="Ngày" prop="date_time" v-if="salesIds.length == 1">
-          <el-date-picker
-            v-model="form.date_time"
-            type="date"
-            placeholder="Chọn ngày"
-          ></el-date-picker>
-        </el-form-item>
-        <!-- select season -->
         <el-form-item v-if="modeForm === MODE_FORM.CREATE" label="Mùa giải" prop="season_id">
           <el-select v-model="form.season_id" placeholder="Chọn mùa giải">
             <el-option
@@ -266,6 +258,26 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="Ngày" prop="date_time" v-if="modeForm == MODE_FORM.EDIT && salesIds.length == 1 || modeForm == MODE_FORM.CREATE">
+          <el-date-picker
+            v-model="form.date_time"
+            type="date"
+            placeholder="Chọn ngày"
+            :picker-options="{
+              disabledDate: (time) => {
+                const current_season = this.seasons.find(
+                  (season) => season.is_current_season === true
+                );
+                return (
+                  time.getTime()  < new Date(current_season.start_date).getTime()  ||
+                  time.getTime() > new Date(current_season.end_date).getTime() - 7 * 60 * 60 * 1000
+                );
+              },
+            }"
+          ></el-date-picker>
+        </el-form-item>
+        <!-- select season -->
+        
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">Hủy</el-button>
