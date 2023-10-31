@@ -248,7 +248,7 @@
             controls-position="right"
           ></el-input-number>
         </el-form-item>
-        <el-form-item label="Ngày" prop="date_time">
+        <el-form-item label="Ngày" prop="date_time" v-if="salesIds.length == 1">
           <el-date-picker
             v-model="form.date_time"
             type="date"
@@ -492,7 +492,7 @@ export default {
             this.loadingSubmit = true;
             // ? await updateSale({ids: me.salesIds, amount: me.form.amount, date_time: dateToString(me.form.date_time)})
             me.modeForm === MODE_FORM.EDIT
-              ? await updateSale({ids: me.salesIds, amount: me.form.amount, date_time: dateToString(me.form.date_time)})
+              ? await updateSale({ids: me.salesIds, amount: me.form.amount, date_time: me.salesIds.length > 1 ? undefined : dateToString(me.form.date_time)})
               : await createSale({...me.form, date_time: dateToString(me.form.date_time)});
             // form me.form.date_time to "yyyy-MM-dd"
 

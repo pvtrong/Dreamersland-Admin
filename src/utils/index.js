@@ -118,10 +118,14 @@ export function param2Obj(url) {
 
 export function formatDate(date, symbol = '/') {
   if (!date) return ''
-  var d = new Date(date),
-    month = '' + (d.getMonth() + 1),
-    day = '' + d.getDate(),
-    year = d.getFullYear()
+  // var d = new date convert to timnezone +0
+  var d = new Date(date);
+  
+  // d - 7h
+  d = new Date(d.getTime() + d.getTimezoneOffset() * 60000)
+  var month = '' + (d.getMonth() + 1),
+  day = '' + d.getDate(),
+  year = d.getFullYear()
 
   if (month.length < 2) month = '0' + month
   if (day.length < 2) day = '0' + day
