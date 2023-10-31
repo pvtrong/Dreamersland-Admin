@@ -101,14 +101,14 @@
               circle=""
             ></el-button>
           </el-tooltip>
-          <el-tooltip effect="dark" content="Xoá" placement="top">
+          <!-- <el-tooltip effect="dark" content="Xoá" placement="top">
             <el-button
               icon="el-icon-delete"
               @click="handleClickDelete(scope)"
               circle=""
               type="danger"
             ></el-button>
-          </el-tooltip>
+          </el-tooltip> -->
         </template>
       </el-table-column>
     </el-table>
