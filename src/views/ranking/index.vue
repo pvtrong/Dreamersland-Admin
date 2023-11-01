@@ -350,7 +350,7 @@ export default {
           this.$refs.multipleTable.toggleRowSelection(row)
         })
       } else {
-        this.$refs.multipleTable.clearSelection()
+        this.$refs.multipleTable?.clearSelection()
       }
     },
     handleSelectionChange(val) {

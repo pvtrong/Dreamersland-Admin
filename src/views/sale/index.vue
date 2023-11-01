@@ -258,7 +258,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="Ngày" prop="date_time" v-if="modeForm == MODE_FORM.EDIT && salesIds.length == 1 || modeForm == MODE_FORM.CREATE">
+        <el-form-item label="Ngày" prop="date_time" v-if="modeForm == MODE_FORM.CREATE">
           <el-date-picker
             v-model="form.date_time"
             type="date"
@@ -504,7 +504,7 @@ export default {
             this.loadingSubmit = true;
             // ? await updateSale({ids: me.salesIds, amount: me.form.amount, date_time: dateToString(me.form.date_time)})
             me.modeForm === MODE_FORM.EDIT
-              ? await updateSale({ids: me.salesIds, amount: me.form.amount, date_time: me.salesIds.length > 1 ? undefined : dateToString(me.form.date_time)})
+              ? await updateSale({ids: me.salesIds, amount: me.form.amount})
               : await createSale({...me.form, date_time: dateToString(me.form.date_time)});
             // form me.form.date_time to "yyyy-MM-dd"
 
@@ -531,7 +531,7 @@ export default {
       if (this.users.length === 0) this.fetchUsers();
       this.$nextTick(() => {
         this.$refs["form"]?.resetFields();
-        this.$refs.multipleTable.clearSelection();
+        this.$refs.multipleTable?.clearSelection();
       });
       this.form = { ...this.defaultForm };
       const current_season = this.seasons.find(
