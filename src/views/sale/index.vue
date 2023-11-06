@@ -239,12 +239,12 @@
         :model="form"
         :rules="rules"
         ref="form"
-        label-width="120px"
+        label-width="140px"
         label-position="left"
       >
-        <el-form-item label="Doanh số" prop="amount">
+        <el-form-item label="Doanh số (Triệu)" prop="amountTemp">
           <el-input-number
-            v-model="form.amount"
+            v-model="form.amountTemp"
             controls-position="right"
           ></el-input-number>
         </el-form-item>
@@ -400,6 +400,7 @@ export default {
       date_time: "",
       season_id: "",
       users: "",
+      amountTemp: 0,
     };
     return {
       formatDate,
@@ -504,8 +505,8 @@ export default {
             this.loadingSubmit = true;
             // ? await updateSale({ids: me.salesIds, amount: me.form.amount, date_time: dateToString(me.form.date_time)})
             me.modeForm === MODE_FORM.EDIT
-              ? await updateSale({ids: me.salesIds, amount: me.form.amount})
-              : await createSale({...me.form, date_time: dateToString(me.form.date_time)});
+              ? await updateSale({ids: me.salesIds, amount: me.form.amountTemp * 1000000})
+              : await createSale({...me.form, date_time: dateToString(me.form.date_time), amount: me.form.amountTemp * 1000000});
             // form me.form.date_time to "yyyy-MM-dd"
 
             me.$message({
@@ -533,7 +534,7 @@ export default {
         this.$refs["form"]?.resetFields();
         this.$refs.multipleTable?.clearSelection();
       });
-      this.form = { ...this.defaultForm };
+      this.form = { ...this.defaultForm, amountTemp: this.form.amount/1000000 };
       const current_season = this.seasons.find(
         (season) => season.is_current_season === true
       );
