@@ -131,5 +131,11 @@ export const rules = {
     required: true,
     trigger: ['blur', 'change'],
     message: 'Vui lòng nhập số tiền',
+  },
+  amountTemp: {
+    type: 'number',
+    required: true,
+    trigger: ['blur', 'change'],
+    message: 'Vui lòng nhập số tiền',
   }
 }
