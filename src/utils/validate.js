@@ -72,6 +72,22 @@ export const rules = {
     trigger: ['blur', 'change'],
     message: 'Vui lòng nhập mật khẩu',
   },
+  confirmPassword: {
+    type: 'string',
+    required: true,
+    trigger: ['blur', 'change'],
+    validator: (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('Vui lòng nhập mật khẩu'))
+      } else {
+        if (value !== this.formIssue.password) {
+          callback(new Error('Mật khẩu không khớp'))
+        } else {
+          callback()
+        }
+      }
+    }
+  },
   phone_number: {
     type: 'string',
     required: true,
