@@ -4,6 +4,22 @@
 @import './element-ui.scss';
 @import './sidebar.scss';
 
+
+@font-face {
+  font-family: 'Exo';
+  src: url('../assets/fonts/Exo2-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'Cairo';
+  src: url('../assets/fonts/Cairo-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('../assets/fonts/Roboto-Regular.ttf');
+}
+
 body {
   height: 100%;
   -moz-osx-font-smoothing: grayscale;
@@ -62,4 +78,41 @@ div:focus {
 // main-container global css
 .app-container {
   padding: 20px;
+}
+
+
+.container {
+  margin: 40px;
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+
+  .description-text {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 20px;
+    color: rgba(39, 44, 51, 0.5);
+    margin-top: 3px;
+  }
+
+  &__header {
+    line-height: 26px;
+    font-family: 'Exo';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 26px;
+    margin-bottom: 20px;
+  }
+}
+
+.el-table__body-wrapper {
+  height: calc(100vh - 445px) !important;
+  overflow-y: auto;
+  .el-table__row {
+      height: 30px;
+  }
 }

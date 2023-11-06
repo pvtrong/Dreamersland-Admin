@@ -51,114 +51,64 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      meta: { title: 'Trang chủ', icon: 'el-icon-s-home' }
     }]
   },
 
   {
-    path: '/example',
+    path: '/user',
     component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'el-icon-s-help' },
+    meta: { title: 'Quản lý nhân viên', icon: 'el-icon-user', activeMenu: '/user' },
     children: [
       {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        path: '/user',
+        name: 'Users',
+        component: () => import('@/views/user/index.vue'),
+        meta: { title: 'Quản lý nhân viên', icon: 'el-icon-user-solid', activeMenu: '/user' },
       },
-      {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
-      }
-    ]
+    ],
   },
-
   {
-    path: '/form',
+    path: '/ranking',
     component: Layout,
+    meta: { title: 'Quản lý danh hiệu', icon: 'el-icon-star-on', activeMenu: '/ranking' },
     children: [
       {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
-      }
-    ]
-  },
-
-  {
-    path: '/nested',
-    component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: 'Nested',
-      icon: 'nested'
-    },
-    children: [
-      {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
-        children: [
-          {
-            path: 'menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
-          },
-          {
-            path: 'menu1-2',
-            component: () => import('@/views/nested/menu1/menu1-2'),
-            name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
-              }
-            ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
-          }
-        ]
+        path: '/ranking',
+        name: 'Rankings',
+        component: () => import('@/views/ranking/index.vue'),
+        meta: { title: 'Quản lý danh hiệu', icon: 'el-icon-star-on', activeMenu: '/ranking' },
       },
-      {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        name: 'Menu2',
-        meta: { title: 'menu2' }
-      }
-    ]
+    ],
   },
-
   {
-    path: 'external-link',
+    path: '/sale',
     component: Layout,
+    meta: { title: 'Quản lý doanh số', icon: 'el-icon-s-data', activeMenu: '/sale' },
     children: [
       {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
-      }
-    ]
+        path: '/sale',
+        name: 'Sales',
+        component: () => import('@/views/sale/index.vue'),
+        meta: { title: 'Quản lý doanh số', icon: 'el-icon-s-data', activeMenu: '/sale' },
+      },
+    ],
   },
+  {
+    path: '/season',
+    component: Layout,
+    meta: { title: 'Quản lý mùa giải', icon: 'el-icon-data-line', activeMenu: '/season' },
+    children: [
+      {
+        path: '/season',
+        name: 'Seasons',
+        component: () => import('@/views/season/index.vue'),
+        meta: { title: 'Quản lý mùa giải', icon: 'el-icon-data-line', activeMenu: '/season' },
+      },
+    ],
+  },
+
+  
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

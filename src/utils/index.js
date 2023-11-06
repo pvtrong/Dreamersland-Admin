@@ -115,3 +115,28 @@ export function param2Obj(url) {
   })
   return obj
 }
+
+export function formatDate(date, symbol = '/') {
+  if (!date) return ''
+  // var d = new date convert to timnezone +0
+  var d = new Date(date);
+  
+  // d - 7h
+  d = new Date(d.getTime() + d.getTimezoneOffset() * 60000)
+  var month = '' + (d.getMonth() + 1),
+  day = '' + d.getDate(),
+  year = d.getFullYear()
+
+  if (month.length < 2) month = '0' + month
+  if (day.length < 2) day = '0' + day
+
+  return [day, month, year].join(symbol)
+}
+
+export function dateToString(date) {
+  let d = new Date(date);
+  let day = d.getDate();
+  let month = d.getMonth() + 1;
+  let year = d.getFullYear();
+  return `${year}/${month}/${day}`;
+}
