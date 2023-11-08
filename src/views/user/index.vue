@@ -152,6 +152,12 @@
         <el-form-item label="Số điện thoại" prop="phone_number">
           <el-input v-model="form.phone_number"></el-input>
         </el-form-item>
+        <el-form-item label="Biệt hiệu" prop="nickname">
+          <el-input v-model="form.nickname"></el-input>
+        </el-form-item>
+        <el-form-item label="Mô tả" prop="bio">
+          <el-input v-model="form.bio"></el-input>
+        </el-form-item>
         <el-form-item v-if="!this.form.id" label="Mật khẩu" prop="password">
           <el-input v-model="form.password" type="password"></el-input>
         </el-form-item>
@@ -254,6 +260,8 @@ export default {
       email: "",
       phone_number: "",
       password: "",
+      bio: "",
+      nickname: ""
     }
     return {
       formatDate,
@@ -377,6 +385,8 @@ export default {
           email: record.email,
           phone_number: record.phone_number,
           password: record.password,
+          bio: record.bio,
+          nickname: record.nickname
         };
       } else this.form = {...this.defaultForm};
       this.dialogFormVisible = true;
