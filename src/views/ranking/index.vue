@@ -28,7 +28,7 @@
       </div> -->
       <div class="user__panel--create">
         <el-button
-          @click="openCreateDialog"
+          @click="openCreateDialog()"
           type="primary"
           icon="el-icon-plus"
           >Thêm danh hiệu</el-button
@@ -133,7 +133,7 @@
       width="30%"
       :before-close="handleClose"
     >
-      <el-form :model="form" :rules="rules" ref="form" label-width="120px" label-position="left">
+      <el-form :model="form" :rules="rules" ref="form" label-width="170px" label-position="left">
         <el-form-item label="Tên danh hiệu" prop="rank_name">
           <el-input v-model="form.rank_name"></el-input>
         </el-form-item>
@@ -153,8 +153,8 @@
             <el-button slot="trigger" size="small" type="primary">Chọn ảnh</el-button>
           </el-upload>
         </el-form-item>
-        <el-form-item label="Mục tiêu ngày" prop="target_day">
-          <el-input-number v-model="form.target_day" controls-position="right"></el-input-number>
+        <el-form-item label="Mục tiêu ngày (Triệu)" prop="target_dayTemp">
+          <el-input-number v-model="form.target_dayTemp" controls-position="right"></el-input-number>
         </el-form-item>
         <el-form-item label="Thứ tự rank" prop="order">
           <el-input-number v-model="form.order" controls-position="right"></el-input-number>
@@ -232,8 +232,9 @@ export default {
       id: "",
       rank_name: "",
       image_url: "",
-      target_day: "",
-      order: "",
+      target_day: 0,
+      target_dayTemp: 0,
+      order: 1,
       image: null,
     }
     return {
@@ -295,6 +296,9 @@ export default {
                 formData.append(key, element)
               }
             }
+            // delete target_day 
+            formData.delete('target_day')
+            formData.append('target_day', this.form.target_dayTemp * 1000000)
 
             if(!this.form.id) 
             {
@@ -330,6 +334,7 @@ export default {
           rank_name: record.rank_name,
           image_url: record.image_url,
           target_day: record.target_day,
+          target_dayTemp: record.target_day/ 1000000,
           order: record.order,
           image: null,
         }

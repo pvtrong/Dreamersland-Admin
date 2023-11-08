@@ -70,7 +70,19 @@ export const rules = {
     type: 'string',
     required: true,
     trigger: ['blur', 'change'],
-    message: 'Vui lòng nhập mật khẩu',
+    // min 6 characters
+    validator: (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('Vui lòng nhập mật khẩu'))
+      } else {
+        if (value.length < 6) {
+          callback(new Error('Mật khẩu phải có ít nhất 6 ký tự'))
+        } else {
+          callback()
+        }
+      }
+    }
+
   },
   confirmPassword: {
     type: 'string',

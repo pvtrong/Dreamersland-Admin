@@ -30,7 +30,7 @@
         <el-button type="default" icon="el-icon-delete">DELETE</el-button>
       </div> -->
       <div class="user__panel--create">
-        <el-button @click="openCreateDialog" type="primary" icon="el-icon-plus"
+        <el-button @click="openCreateDialog()" type="primary" icon="el-icon-plus"
           >Thêm nhân viên</el-button
         >
       </div>
