@@ -222,7 +222,7 @@ const tableColumns = [
   },
   {
     label: 'Điểm mùa này',
-    property: 'current_season_point',
+    property: 'current_season_total_point',
   },
   {
     label: 'Doanh thu',
