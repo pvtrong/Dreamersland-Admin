@@ -149,9 +149,6 @@
         <el-form-item label="Số điện thoại" prop="phone_number">
           <el-input v-model="form.phone_number"></el-input>
         </el-form-item>
-        <el-form-item label="Số điện thoại" prop="phone_number">
-          <el-input v-model="form.phone_number"></el-input>
-        </el-form-item>
         <el-form-item label="Biệt hiệu" prop="nickname">
           <el-input v-model="form.nickname"></el-input>
         </el-form-item>
