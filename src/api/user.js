@@ -52,3 +52,11 @@ export function deleteUser(phone_number) {
     method: 'delete'
   })
 }
+
+export function resetPassword(data, id) {
+  return request({
+    url: '/admin/reset_password/' + id,
+    method: 'post',
+    data
+  })
+}

@@ -30,7 +30,7 @@
         <el-button type="default" icon="el-icon-delete">DELETE</el-button>
       </div> -->
       <div class="user__panel--create">
-        <el-button @click="openCreateDialog" type="primary" icon="el-icon-plus"
+        <el-button @click="openCreateDialog()" type="primary" icon="el-icon-plus"
           >Thêm nhân viên</el-button
         >
       </div>
@@ -101,6 +101,14 @@
               circle=""
             ></el-button>
           </el-tooltip>
+          <el-tooltip effect="dark" content="Cấp lại mật khẩu" placement="top">
+            <el-button
+              icon="el-icon-coordinate"
+              @click="handleClickIssuePW(scope)"
+              circle=""
+              type="warning"
+            ></el-button>
+          </el-tooltip>
           <!-- <el-tooltip effect="dark" content="Xoá" placement="top">
             <el-button
               icon="el-icon-delete"
@@ -141,8 +149,14 @@
         <el-form-item label="Số điện thoại" prop="phone_number">
           <el-input v-model="form.phone_number"></el-input>
         </el-form-item>
+        <el-form-item label="Biệt hiệu" prop="nickname">
+          <el-input v-model="form.nickname"></el-input>
+        </el-form-item>
+        <el-form-item label="Mô tả" prop="bio">
+          <el-input v-model="form.bio"></el-input>
+        </el-form-item>
         <el-form-item v-if="!this.form.id" label="Mật khẩu" prop="password">
-          <el-input v-model="form.password"></el-input>
+          <el-input v-model="form.password" type="password"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -150,11 +164,33 @@
         <el-button type="primary" @click="submit" :loading="loadingSubmit">Lưu</el-button>
       </div>
     </el-dialog>
+
+    <!-- dialog issue password again have input password -->
+    <el-dialog
+      :title="'Cấp lại mật khẩu'"
+      :visible.sync="dialogIssuePWVisible"
+      width="30%"
+      :before-close="handleClose"
+    >
+      <el-form :model="formIssue" :rules="rulesIssue" ref="formIssue" label-width="150px" label-position="left">
+        <el-form-item label="Mật khẩu" prop="password">
+          <el-input v-model="formIssue.password" type="password"></el-input>
+        </el-form-item>
+        <!-- confirm password again -->
+        <!-- <el-form-item label="Nhập lại mật khẩu" prop="confirmPassword">
+          <el-input v-model="formIssue.confirmPassword" type="password"></el-input>
+        </el-form-item> -->
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogIssuePWVisible = false">Hủy</el-button>
+        <el-button type="primary" @click="submitIssue" :loading="loadingSubmit">Lưu</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getUsers, createUser, updateUser, deleteUser } from "@/api/user";
+import { getUsers, createUser, updateUser, deleteUser, resetPassword } from "@/api/user";
 import { mapGetters } from "vuex";
 
 // utils
@@ -186,7 +222,7 @@ const tableColumns = [
   },
   {
     label: 'Điểm mùa này',
-    property: 'current_season_point',
+    property: 'current_season_total_point',
   },
   {
     label: 'Doanh thu',
@@ -221,6 +257,8 @@ export default {
       email: "",
       phone_number: "",
       password: "",
+      bio: "",
+      nickname: ""
     }
     return {
       formatDate,
@@ -243,11 +281,58 @@ export default {
       form: defaultForm,
       rules,
       defaultForm,
-      loadingSubmit: false
+      loadingSubmit: false,
+      // issue password dialog
+      dialogIssuePWVisible: false,
+      formIssue: {
+        password: "",
+        // confirmPassword: "",
+        id: "",
+      },
+      rulesIssue: rules,
     };
   },
 
   methods: {
+    async submitIssue() {
+      this.$refs["formIssue"].validate(async (valid) => {
+        if (valid) {
+          try {
+            this.loadingSubmit = true;
+            await resetPassword({
+              new_password: this.formIssue.password,
+              repeat_new_password: this.formIssue.password,
+            }, this.formIssue.id);
+            this.$message({
+              message: "Cấp lại mật khẩu thành công",
+              type: "success",
+            });
+            this.dialogIssuePWVisible = false;
+            this.fetchData();
+          } catch (error) {}
+          finally {
+            this.loadingSubmit = false;
+          }
+        } else {
+          return false;
+        }
+      });
+    },
+    handleClickIssuePW(scope) {
+      this.openCreateDialogIssue(scope);
+    },
+    openCreateDialogIssue(scope) {
+      this.$nextTick(() => {
+        this.$refs["formIssue"]?.resetFields();
+      });
+      this.dialogIssuePWVisible = true;
+      this.formIssue = {
+        password: "",
+        // confirmPassword: "",
+        id: scope.row.id,
+      };
+    },
+
     async handleClickDelete(scope) {
       this.$confirm("Bạn có chắc chắn muốn xoá?")
         .then(async (_) => {
@@ -297,6 +382,8 @@ export default {
           email: record.email,
           phone_number: record.phone_number,
           password: record.password,
+          bio: record.bio,
+          nickname: record.nickname
         };
       } else this.form = {...this.defaultForm};
       this.dialogFormVisible = true;
