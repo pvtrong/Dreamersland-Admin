@@ -92,7 +92,7 @@
           <template #default="scope"
             >
             <img
-              :src="scope.row.avatar_url"
+              :src="scope.row.avatar_url ? scope.row.avatar_url : 'default-user.png'"
               style="width: 60px; height: 60px; object-fit: cover; border-radius: 50%; border: 1px solid #ddd;"
             />
           </template>
