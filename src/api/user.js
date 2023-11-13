@@ -38,9 +38,9 @@ export function getUsers(params) {
   })
 }
 
-export function updateUser(data) {
+export function updateUser(data, id) {
   return request({
-    url: '/admin/update_profile/' + data.id,
+    url: '/admin/update_profile/' + id,
     method: 'post',
     data
   })
