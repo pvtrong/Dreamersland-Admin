@@ -68,7 +68,7 @@
             >
             <img
               :src="getImgSmall(scope.row.image_url)"
-              style="width: 60px; height: 60px; object-fit: cover"
+              style="width: 40px; height: 40px; object-fit: cover"
             />
           </template>
         </el-table-column>
@@ -450,14 +450,14 @@ export default {
 }
 
 ::v-deep tr {
-  height: 100px;
+  height: 40px;
 }
 .table-content {
   flex-grow: 1;
 }
 
 ::v-deep .el-table__body-wrapper {
-  height: calc(100vh - 445px) !important;
+  height: calc(100vh - 365px) !important;
   overflow-y: auto;
 }
 </style>

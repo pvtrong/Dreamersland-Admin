@@ -93,7 +93,7 @@
             >
             <img
               :src="scope.row.avatar_url ? getImgSmall(scope.row.avatar_url) : 'default-user.png'"
-              style="width: 60px; height: 60px; object-fit: cover; border-radius: 50%; border: 1px solid #ddd;"
+              style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%; border: 1px solid #ddd;"
             />
           </template>
         </el-table-column>
@@ -563,14 +563,14 @@ export default {
 }
 
 ::v-deep tr {
-  height: 100px;
+  height: 40px;
 }
 .table-content {
   flex-grow: 1;
 }
 
 ::v-deep .el-table__body-wrapper {
-  height: calc(100vh - 445px) !important;
+  height: calc(100vh - 365px) !important;
   overflow-y: auto;
   .el-table__row {
       height: 30px;

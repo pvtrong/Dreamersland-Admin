@@ -143,6 +143,6 @@ export function dateToString(date) {
 
 export function getImgSmall(url) {
   const urlArr = url.split('/')
-  urlArr.splice(6, 0, 'w_60')
+  urlArr.splice(6, 0, 'q_auto:low')
   return urlArr.join('/')
 }
