@@ -251,7 +251,7 @@ const tableColumns = [
   },
   {
     label: "Hạng hiện tại",
-    property: "rank.rank_name",
+    property: "current_season_rank.rank_name",
     width: 150
   },
   {
