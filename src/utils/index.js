@@ -140,3 +140,9 @@ export function dateToString(date) {
   let year = d.getFullYear();
   return `${year}/${month}/${day}`;
 }
+
+export function getImgSmall(url) {
+  const urlArr = url.split('/')
+  urlArr.splice(6, 0, 'w_60')
+  return urlArr.join('/')
+}

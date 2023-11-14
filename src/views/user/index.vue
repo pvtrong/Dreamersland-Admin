@@ -92,7 +92,7 @@
           <template #default="scope"
             >
             <img
-              :src="scope.row.avatar_url ? scope.row.avatar_url : 'default-user.png'"
+              :src="scope.row.avatar_url ? getImgSmall(scope.row.avatar_url) : 'default-user.png'"
               style="width: 60px; height: 60px; object-fit: cover; border-radius: 50%; border: 1px solid #ddd;"
             />
           </template>
@@ -226,7 +226,7 @@ import { getUsers, createUser, updateUser, deleteUser, resetPassword } from "@/a
 import { mapGetters } from "vuex";
 
 // utils
-import { formatDate } from "@/utils/index";
+import { formatDate, getImgSmall } from "@/utils/index";
 import { rules } from "@/utils/validate";
 
 // constants
@@ -332,6 +332,7 @@ export default {
         id: "",
       },
       rulesIssue: rules,
+      getImgSmall
     };
   },
 
