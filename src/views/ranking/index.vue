@@ -67,8 +67,8 @@
           <template #default="scope"
             >
             <img
-              :src="scope.row.image_url"
-              style="width: 100px; height: 100px; object-fit: cover"
+              :src="getImgSmall(scope.row.image_url)"
+              style="width: 60px; height: 60px; object-fit: cover"
             />
           </template>
         </el-table-column>
@@ -176,7 +176,7 @@ import { getRankings, createRanking, updateRanking, deleteRanking } from '@/api/
 import { mapGetters } from 'vuex'
 
 // utils
-import { formatDate } from '@/utils/index'
+import { formatDate, getImgSmall } from '@/utils/index'
 import { rules } from '@/utils/validate' 
 
 // constants
@@ -258,6 +258,7 @@ export default {
       rules,
       defaultForm,
       loadingSubmit: false,
+      getImgSmall
     }
   },
 
