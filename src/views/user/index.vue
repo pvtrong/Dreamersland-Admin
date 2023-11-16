@@ -83,6 +83,21 @@
           </template>
         </el-table-column>
         <el-table-column
+          v-else-if="item.property === 'avatar_url'"
+          :label="item.label"
+          :type="item.type"
+          :key="index"
+          :width="item.width"
+        >
+          <template #default="scope"
+            >
+            <img
+              :src="scope.row.avatar_url ? getImgSmall(scope.row.avatar_url) : 'default-user.png'"
+              style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%; border: 1px solid #ddd;"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column
           v-else
           :property="item.property"
           :label="item.label"
@@ -91,6 +106,7 @@
           :key="index"
         >
         </el-table-column>
+        
       </template>
       <el-table-column label="Hành động" width="120">
         <template slot-scope="scope">
@@ -143,6 +159,22 @@
         <el-form-item label="Họ nhân viên" prop="last_name">
           <el-input v-model="form.last_name"></el-input>
         </el-form-item>
+        <el-form-item label="Ảnh" prop="avatar_url">
+          <!-- input submit image and use this file image to append to form -->
+          <el-upload
+            class="avatar-uploader"
+            action="''"
+            :auto-upload="false"
+            :show-file-list="true"
+            ref="upload"
+            :thumbnail-mode="true"
+            :limit="1"
+            :list-type="'picture'"
+            :on-change="handleChange"
+          >
+            <el-button slot="trigger" size="small" type="primary">Chọn ảnh</el-button>
+          </el-upload>
+        </el-form-item>
         <el-form-item label="Email" prop="email">
           <el-input v-model="form.email"></el-input>
         </el-form-item>
@@ -194,7 +226,7 @@ import { getUsers, createUser, updateUser, deleteUser, resetPassword } from "@/a
 import { mapGetters } from "vuex";
 
 // utils
-import { formatDate } from "@/utils/index";
+import { formatDate, getImgSmall } from "@/utils/index";
 import { rules } from "@/utils/validate";
 
 // constants
@@ -210,19 +242,27 @@ const tableColumns = [
     width: "80",
   },
   {
+    label: 'Avatar',
+    property: 'avatar_url',
+    width: 70,
+  },
+  {
     label: "Họ tên nhân viên",
   },
   {
-    label: "Email",
-    property: "email",
+    label: "Hạng hiện tại",
+    property: "current_season_rank.rank_name",
+    width: 150
   },
   {
     label: 'Số điện thoại',
     property: 'phone_number',
+    width: 120
   },
   {
     label: 'Điểm mùa này',
     property: 'current_season_total_point',
+    width: 150
   },
   {
     label: 'Doanh thu',
@@ -232,6 +272,7 @@ const tableColumns = [
     label: "Ngày tạo",
     property: "createdAt",
     type: TYPE_DATA.DATE,
+    width: 120
   },
 
 ];
@@ -258,7 +299,8 @@ export default {
       phone_number: "",
       password: "",
       bio: "",
-      nickname: ""
+      nickname: "",
+      avatar_url: "",
     }
     return {
       formatDate,
@@ -290,6 +332,7 @@ export default {
         id: "",
       },
       rulesIssue: rules,
+      getImgSmall
     };
   },
 
@@ -352,9 +395,26 @@ export default {
         if (valid) {
           try {
             this.loadingSubmit = true;
+            // create new form data
+            const formData = new FormData()
+
+            // append data to form data
+            for (const key in this.form) {
+              if (this.form.hasOwnProperty(key)) {
+                const element = this.form[key]
+                formData.append(key, element)
+              }
+            }
+            if(!this.form.id) 
+            {
+              formData.delete('id')
+            }else {
+              formData.delete('password')
+            }
+            formData.delete('avatar_url_real')
             this.form.id
-              ? await updateUser(this.form)
-              : await createUser(this.form);
+              ? await updateUser(formData, this.form.id)
+              : await createUser(formData);
             this.$message({
               message: this.form.id ? "Cập nhật thành công" : "Tạo thành công",
               type: "success",
@@ -383,10 +443,14 @@ export default {
           phone_number: record.phone_number,
           password: record.password,
           bio: record.bio,
-          nickname: record.nickname
+          nickname: record.nickname,
+          avatar_url: null,
+          avatar_url_real: record.avatar_url,
         };
       } else this.form = {...this.defaultForm};
       this.dialogFormVisible = true;
+      // clear file
+      this.$refs.upload.clearFiles()
     },
     handleClose(done) {
       this.$confirm("Bạn có chắc chắn muốn thoát?")
@@ -403,6 +467,10 @@ export default {
       } else {
         this.$refs.multipleTable.clearSelection();
       }
+    },
+    handleChange(file) {
+      this.form.avatar_url_real = file.url
+      this.form.avatar_url = file.raw
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
@@ -495,14 +563,14 @@ export default {
 }
 
 ::v-deep tr {
-  height: 100px;
+  height: 40px;
 }
 .table-content {
   flex-grow: 1;
 }
 
 ::v-deep .el-table__body-wrapper {
-  height: calc(100vh - 445px) !important;
+  height: calc(100vh - 365px) !important;
   overflow-y: auto;
   .el-table__row {
       height: 30px;

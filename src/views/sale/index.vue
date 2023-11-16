@@ -258,7 +258,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="Ngày" prop="date_time" v-if="modeForm == MODE_FORM.CREATE">
+        <el-form-item label="Ngày nhập" prop="date_time" v-if="modeForm == MODE_FORM.CREATE">
           <el-date-picker
             v-model="form.date_time"
             type="date"
@@ -319,7 +319,7 @@ const tableColumns = [
     property: "point",
   },
   {
-    label: "Ngày",
+    label: "Ngày nhập",
     property: "date_time",
     type: TYPE_DATA.DATE,
   },
@@ -655,14 +655,14 @@ export default {
 }
 
 ::v-deep tr {
-  height: 100px;
+  height: 40px;
 }
 .table-content {
   flex-grow: 1;
 }
 
 ::v-deep .el-table__body-wrapper {
-  height: calc(100vh - 445px) !important;
+  height: calc(100vh - 365px) !important;
   overflow-y: auto;
 }
 ::v-deep {
