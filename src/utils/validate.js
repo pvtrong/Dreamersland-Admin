@@ -160,6 +160,12 @@ export const rules = {
     trigger: ['blur', 'change'],
     message: 'Vui lòng nhập số tiền',
   },
+  bonusTask: {
+    type: 'number',
+    required: true,
+    trigger: ['blur', 'change'],
+    message: 'Vui lòng nhập số điểm bonus',
+  },
   amountTemp: {
     type: 'number',
     required: true,
