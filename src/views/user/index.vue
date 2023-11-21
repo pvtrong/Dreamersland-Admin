@@ -108,7 +108,7 @@
         </el-table-column>
         
       </template>
-      <el-table-column label="Hành động" width="120">
+      <el-table-column label="Hành động" width="170">
         <template slot-scope="scope">
           <el-tooltip effect="dark" content="Sửa" placement="top">
             <el-button
