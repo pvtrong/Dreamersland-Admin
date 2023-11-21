@@ -65,7 +65,7 @@
           :width="item.width"
         >
           <template #default="scope"
-            >{{ scope.row.first_name + ' ' + scope.row.last_name }}
+            >{{ scope.row.last_name + ' ' + scope.row.first_name }}
           </template>
         </el-table-column>
         <el-table-column
