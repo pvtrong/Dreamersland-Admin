@@ -55,7 +55,7 @@ const actions = {
 
         const { user } = data
 
-        commit('SET_NAME', user.first_name + ' ' + user.last_name)
+        commit('SET_NAME', user.last_name + ' ' + user.first_name)
         // commit('SET_AVATAR', avatar)
         resolve(data)
       }).catch(error => {

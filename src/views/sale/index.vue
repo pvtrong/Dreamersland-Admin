@@ -107,7 +107,7 @@
           :width="item.width"
         >
           <template #default="scope"
-            >{{ scope.row.user.first_name + " " + scope.row.user.last_name }}
+            >{{ scope.row.user.last_name + " " + scope.row.user.first_name }}
           </template>
         </el-table-column>
         <el-table-column
@@ -123,6 +123,19 @@
                 style: "currency",
                 currency: "VND",
               })
+            }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-else-if="item.property === 'point'"
+          :label="item.label"
+          :type="item.type"
+          :key="index"
+          :width="item.width"
+        >
+          <template #default="scope"
+            >{{
+              scope.row.point + scope.row.bonus + scope.row.bonusTask
             }}
           </template>
         </el-table-column>
@@ -248,6 +261,13 @@
             controls-position="right"
           ></el-input-number>
         </el-form-item>
+        <el-form-item label="Điểm nhiệm vụ" prop="bonusTask">
+          <el-input-number
+            v-model="form.bonusTask"
+            controls-position="right"
+            :min="0"
+          ></el-input-number>
+        </el-form-item>
         <el-form-item v-if="modeForm === MODE_FORM.CREATE" label="Mùa giải" prop="season_id">
           <el-select v-model="form.season_id" placeholder="Chọn mùa giải">
             <el-option
@@ -276,8 +296,6 @@
             }"
           ></el-date-picker>
         </el-form-item>
-        <!-- select season -->
-        
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">Hủy</el-button>
@@ -327,8 +345,8 @@ const tableColumns = [
     label: "Họ tên nhân viên",
   },
   {
-    label: "Số điện thoại",
-    property: "user.phone_number",
+    label: "Điểm nhiệm vụ",
+    property: "bonusTask",
   },
   {
     label: "Mùa giải",
@@ -401,6 +419,7 @@ export default {
       season_id: "",
       users: "",
       amountTemp: 0,
+      bonusTask: 0
     };
     return {
       formatDate,
@@ -505,7 +524,7 @@ export default {
             this.loadingSubmit = true;
             // ? await updateSale({ids: me.salesIds, amount: me.form.amount, date_time: dateToString(me.form.date_time)})
             me.modeForm === MODE_FORM.EDIT
-              ? await updateSale({ids: me.salesIds, amount: me.form.amountTemp * 1000000})
+              ? await updateSale({ids: me.salesIds, amount: me.form.amountTemp * 1000000, bonusTask: me.form.bonusTask})
               : await createSale({...me.form, date_time: dateToString(me.form.date_time), amount: me.form.amountTemp * 1000000});
             // form me.form.date_time to "yyyy-MM-dd"
 

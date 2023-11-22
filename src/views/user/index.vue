@@ -65,7 +65,7 @@
           :width="item.width"
         >
           <template #default="scope"
-            >{{ scope.row.first_name + ' ' + scope.row.last_name }}
+            >{{ scope.row.last_name + ' ' + scope.row.first_name }}
           </template>
         </el-table-column>
         <el-table-column
@@ -108,7 +108,7 @@
         </el-table-column>
         
       </template>
-      <el-table-column label="Hành động" width="120">
+      <el-table-column label="Hành động" width="170">
         <template slot-scope="scope">
           <el-tooltip effect="dark" content="Sửa" placement="top">
             <el-button
@@ -125,14 +125,14 @@
               type="warning"
             ></el-button>
           </el-tooltip>
-          <!-- <el-tooltip effect="dark" content="Xoá" placement="top">
+          <el-tooltip effect="dark" content="Xoá" placement="top">
             <el-button
               icon="el-icon-delete"
               @click="handleClickDelete(scope)"
               circle=""
               type="danger"
             ></el-button>
-          </el-tooltip> -->
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
